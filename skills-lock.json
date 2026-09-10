@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "content-creator": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "marketing-skill/skills/content-creator/SKILL.md",
+      "computedHash": "0a475aa3d44fe1f0387c40a88b28831c7bf64090010b5980c6bef1dbf5cbc405"
+    }
+  }
+}
