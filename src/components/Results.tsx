@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { Activity, Server, Zap, CheckCircle2, Cloud } from "lucide-react";
 
 type TabType = "Frontend" | "Backend" | "Optimalizace";
@@ -18,7 +18,7 @@ const CircularProgress = ({ value, label, color = "text-green-500", stroke = "st
       <div className="relative w-24 h-24 flex items-center justify-center">
         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="38" className="stroke-zinc-100" strokeWidth="8" fill="none" />
-          <motion.circle
+          <m.circle
             cx="50"
             cy="50"
             r="38"
@@ -68,7 +68,7 @@ export default function Results() {
                 }`}
               >
                 {activeTab === tab && (
-                  <motion.div
+                  <m.div
                     layoutId="resultsTab"
                     className="absolute inset-0 bg-white rounded-full shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-black/5 -z-10"
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -86,7 +86,7 @@ export default function Results() {
             
             {/* FRONTEND TAB */}
             {activeTab === "Frontend" && (
-              <motion.div
+              <m.div
                 key="frontend"
                 initial={{ opacity: 0, y: 10, filter: "blur(5px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -127,12 +127,12 @@ export default function Results() {
                     <CircularProgress value={100} label="SEO" />
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             )}
 
             {/* BACKEND TAB */}
             {activeTab === "Backend" && (
-              <motion.div
+              <m.div
                 key="backend"
                 initial={{ opacity: 0, y: 10, filter: "blur(5px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -177,7 +177,7 @@ export default function Results() {
                     <div className="absolute left-0 bottom-0 top-0 w-8 bg-gradient-to-r from-[#111] to-transparent z-20" />
                     <div className="absolute right-0 bottom-0 top-0 w-8 bg-gradient-to-l from-[#111] to-transparent z-20" />
                     
-                    <motion.div 
+                    <m.div 
                       animate={{ x: ["0%", "-50%"] }}
                       transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
                       className="flex items-end gap-1 h-full min-w-[200%]"
@@ -197,7 +197,7 @@ export default function Results() {
                           />
                         );
                       })}
-                    </motion.div>
+                    </m.div>
                   </div>
                   <div className="flex justify-between text-zinc-600 font-mono text-[10px] mt-3 relative z-10">
                     <span>NOW</span>
@@ -206,12 +206,12 @@ export default function Results() {
                     <span>-3M</span>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             )}
 
             {/* OPTIMALIZACE TAB */}
             {activeTab === "Optimalizace" && (
-              <motion.div
+              <m.div
                 key="optimalizace"
                 initial={{ opacity: 0, y: 10, filter: "blur(5px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -248,7 +248,7 @@ export default function Results() {
                       <span className="text-sm font-mono text-zinc-500">64kb</span>
                     </div>
                     <div className="w-full h-3 bg-zinc-100 rounded-full overflow-hidden">
-                      <motion.div 
+                      <m.div 
                         initial={{ width: 0 }}
                         animate={{ width: "20%" }}
                         transition={{ duration: 1, ease: "easeOut" }}
@@ -263,7 +263,7 @@ export default function Results() {
                       <span className="text-sm font-mono text-zinc-500">120kb</span>
                     </div>
                     <div className="w-full h-3 bg-zinc-100 rounded-full overflow-hidden">
-                      <motion.div 
+                      <m.div 
                         initial={{ width: 0 }}
                         animate={{ width: "40%" }}
                         transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
@@ -278,7 +278,7 @@ export default function Results() {
                       <span className="text-sm font-mono text-zinc-500">32kb</span>
                     </div>
                     <div className="w-full h-3 bg-zinc-100 rounded-full overflow-hidden">
-                      <motion.div 
+                      <m.div 
                         initial={{ width: 0 }}
                         animate={{ width: "10%" }}
                         transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
@@ -294,7 +294,7 @@ export default function Results() {
                     </span>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             )}
 
           </AnimatePresence>

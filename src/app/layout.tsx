@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import Navbar from "@/components/Navbar";
+import MotionProvider from "@/components/MotionProvider";
 import Script from "next/script";
 
 const inter = Inter({
@@ -44,7 +45,9 @@ export default function RootLayout({
         </noscript>
         <Navbar />
         <SmoothScroll>
-          {children}
+          <MotionProvider>
+            {children}
+          </MotionProvider>
         </SmoothScroll>
       </body>
     </html>

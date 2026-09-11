@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { TrendingUp, Activity, Zap, ArrowUpRight } from 'lucide-react';
 
 /* ─────────────────────────────────────────────────────────────
@@ -11,7 +11,7 @@ function EdgeGlare() {
   return (
     <div className="absolute inset-0 pointer-events-none rounded-[inherit] overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-10">
       <div className="absolute inset-[0px] rounded-[inherit] border border-transparent [mask-clip:padding-box,border-box] [mask-composite:intersect] [mask-image:linear-gradient(transparent,transparent),linear-gradient(#000,#000)]">
-        <motion.div
+        <m.div
           animate={{ rotate: 360 }}
           transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] aspect-square bg-[conic-gradient(from_0deg,transparent_75%,rgba(59,130,246,0.9)_100%)]"
@@ -26,7 +26,7 @@ function EdgeGlare() {
 ───────────────────────────────────────────────────────────── */
 function RevenueChart() {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -69,14 +69,14 @@ function RevenueChart() {
             </linearGradient>
           </defs>
           
-          <motion.path
+          <m.path
             d="M 0,80 C 50,70 100,90 150,50 C 200,10 250,60 300,30 C 350,-10 400,10 400,10 L 400,100 L 0,100 Z"
             fill="url(#chartFill)"
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           />
           
-          <motion.path
+          <m.path
             d="M 0,80 C 50,70 100,90 150,50 C 200,10 250,60 300,30 C 350,-10 400,10 400,10"
             fill="none"
             stroke="url(#chartLine)"
@@ -87,7 +87,7 @@ function RevenueChart() {
             transition={{ duration: 2, ease: "easeInOut" }}
           />
           
-          <motion.circle
+          <m.circle
             cx="400"
             cy="10"
             r="5"
@@ -104,7 +104,7 @@ function RevenueChart() {
           />
         </svg>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -136,7 +136,7 @@ function PerformanceCard() {
   }, []);
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
@@ -157,7 +157,7 @@ function PerformanceCard() {
         <div className="relative w-24 h-24 flex items-center justify-center">
           <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="42" fill="none" stroke="#f8fafc" strokeWidth="6" />
-            <motion.circle
+            <m.circle
               cx="50"
               cy="50"
               r="42"
@@ -182,7 +182,7 @@ function PerformanceCard() {
         </div>
         <span className="text-xs font-semibold text-zinc-900 mt-3">Rychlost webu</span>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -191,7 +191,7 @@ function PerformanceCard() {
 ───────────────────────────────────────────────────────────── */
 function PipelineCard() {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
@@ -231,23 +231,23 @@ function PipelineCard() {
               </div>
             </div>
             <div className="h-2 w-full bg-zinc-100/80 rounded-full overflow-hidden">
-              <motion.div
+              <m.div
                 initial={{ width: 0 }}
                 animate={{ width: `${item.progress}%` }}
                 transition={{ duration: 1.5, delay: 1 + i * 0.2, ease: "easeOut" }}
                 className="relative h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 overflow-hidden"
               >
-                <motion.div 
+                <m.div 
                   animate={{ x: ["-100%", "200%"] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 + 2 }}
                   className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent"
                 />
-              </motion.div>
+              </m.div>
             </div>
           </div>
         ))}
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 

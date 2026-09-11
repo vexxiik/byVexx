@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { m, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 /* ─────────────────────────────────────────────────────────────
    ABSTRACT VISUAL ELEMENTS (replace boring static icons)
@@ -12,7 +12,7 @@ function BrokenPulse() {
   return (
     <div className="relative w-14 h-14 flex items-center justify-center">
       {[0, 1, 2].map((i) => (
-        <motion.div
+        <m.div
           key={i}
           className="absolute rounded-full border border-red-300/40"
           style={{ width: 20 + i * 14, height: 20 + i * 14 }}
@@ -29,12 +29,12 @@ function BrokenPulse() {
 function FragmentedSquare() {
   return (
     <div className="relative w-14 h-14 flex items-center justify-center">
-      <motion.div
+      <m.div
         animate={{ rotate: [0, 90, 90, 180], opacity: [0.7, 0.3, 0.7, 0.3] }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         className="w-8 h-8 border-2 border-dashed border-red-300 rounded-lg"
       />
-      <motion.div
+      <m.div
         animate={{ rotate: [45, -45, 45] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         className="absolute w-4 h-4 bg-red-200/60 rounded-sm"
@@ -48,7 +48,7 @@ function DecayingSignal() {
   return (
     <div className="relative w-14 h-14 flex items-end justify-center gap-1 pb-3">
       {[28, 20, 14, 8].map((h, i) => (
-        <motion.div
+        <m.div
           key={i}
           className="w-2 rounded-t-sm bg-red-300/60"
           animate={{ height: [h, h * 0.3, h], opacity: [0.8, 0.2, 0.8] }}
@@ -63,12 +63,12 @@ function DecayingSignal() {
 function GhostCircle() {
   return (
     <div className="relative w-14 h-14 flex items-center justify-center">
-      <motion.div
+      <m.div
         className="w-10 h-10 rounded-full border-2 border-red-300/50"
         animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       />
-      <motion.div
+      <m.div
         className="absolute w-5 h-5 rounded-full bg-red-200/40"
         animate={{ opacity: [0.5, 0.1, 0.5] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -81,12 +81,12 @@ function GhostCircle() {
 function BreathingDiamond() {
   return (
     <div className="relative w-14 h-14 flex items-center justify-center">
-      <motion.div
+      <m.div
         className="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-lg shadow-[0_0_20px_rgba(59,130,246,0.3)]"
         animate={{ rotate: [45, 45, 45], scale: [0.9, 1.05, 0.9] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       />
-      <motion.div
+      <m.div
         className="absolute w-12 h-12 border border-blue-300/30 rounded-lg rotate-45"
         animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.1, 0.4] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
@@ -99,17 +99,17 @@ function BreathingDiamond() {
 function MagneticCrosshair() {
   return (
     <div className="relative w-14 h-14 flex items-center justify-center">
-      <motion.div
+      <m.div
         className="absolute w-10 h-10 rounded-full border border-blue-400/40"
         animate={{ scale: [1, 1.15, 1] }}
         transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
       />
-      <motion.div
+      <m.div
         className="absolute w-5 h-[1.5px] bg-blue-400/60"
         animate={{ scaleX: [1, 1.3, 1] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
       />
-      <motion.div
+      <m.div
         className="absolute h-5 w-[1.5px] bg-blue-400/60"
         animate={{ scaleY: [1, 1.3, 1] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
@@ -123,20 +123,20 @@ function MagneticCrosshair() {
 function SyncedOrbit() {
   return (
     <div className="relative w-14 h-14 flex items-center justify-center">
-      <motion.div
+      <m.div
         className="absolute w-10 h-10"
         animate={{ rotate: 360 }}
         transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
       >
         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.6)]" />
-      </motion.div>
-      <motion.div
+      </m.div>
+      <m.div
         className="absolute w-10 h-10"
         animate={{ rotate: -360 }}
         transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
       >
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 rounded-full bg-indigo-400 shadow-[0_0_8px_rgba(129,140,248,0.6)]" />
-      </motion.div>
+      </m.div>
       <div className="w-3 h-3 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500" />
     </div>
   );
@@ -147,7 +147,7 @@ function RisingArrows() {
   return (
     <div className="relative w-14 h-14 flex items-center justify-center overflow-hidden">
       {[0, 1, 2].map((i) => (
-        <motion.div
+        <m.div
           key={i}
           className="absolute"
           style={{ left: 14 + i * 8 }}
@@ -157,7 +157,7 @@ function RisingArrows() {
           <svg width="10" height="16" viewBox="0 0 10 16" fill="none">
             <path d="M5 14V2M5 2L1 6M5 2L9 6" stroke="#3B82F6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-        </motion.div>
+        </m.div>
       ))}
     </div>
   );
@@ -201,7 +201,7 @@ function TiltCard({
     : "hover:shadow-[0_20px_50px_rgba(239,68,68,0.06)]";
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -232,7 +232,7 @@ function TiltCard({
       />
 
       <div className="relative z-10">{children}</div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -296,19 +296,19 @@ export default function Comparison() {
   return (
     <section className="relative py-24 lg:py-32 bg-white overflow-hidden">
       {/* Ambient background shift */}
-      <motion.div
+      <m.div
         className="absolute inset-0 pointer-events-none transition-opacity duration-700"
         animate={{ opacity: isVexx ? 1 : 0 }}
       >
         <div className="absolute top-[20%] right-[-5%] w-[500px] h-[500px] bg-blue-400/[0.03] rounded-full blur-[100px]" />
         <div className="absolute bottom-[10%] left-[-5%] w-[400px] h-[400px] bg-indigo-400/[0.03] rounded-full blur-[100px]" />
-      </motion.div>
-      <motion.div
+      </m.div>
+      <m.div
         className="absolute inset-0 pointer-events-none transition-opacity duration-700"
         animate={{ opacity: isVexx ? 0 : 1 }}
       >
         <div className="absolute top-[30%] left-[10%] w-[400px] h-[400px] bg-red-400/[0.025] rounded-full blur-[100px]" />
-      </motion.div>
+      </m.div>
 
       <div className="container mx-auto px-6 lg:px-12 max-w-[85rem] relative z-10">
         {/* ── Header ── */}
@@ -348,7 +348,7 @@ export default function Comparison() {
             </button>
 
             {/* Sliding pill */}
-            <motion.div
+            <m.div
               layout
               className={`absolute top-1.5 bottom-1.5 rounded-full border shadow-sm ${
                 isVexx
@@ -367,7 +367,7 @@ export default function Comparison() {
         {/* ── Cards Grid ── */}
         <div className="max-w-5xl mx-auto">
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={isVexx ? "vexx" : "bad"}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -403,7 +403,7 @@ export default function Comparison() {
                   </div>
                 </TiltCard>
               ))}
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
       </div>

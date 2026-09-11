@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
-import { motion, useInView, Variants } from "framer-motion";
+import { m, useInView, Variants } from "framer-motion";
 import { TrendingUp, Quote, Code2, PenTool, Star } from "lucide-react";
 
 export default function ImpactBento() {
@@ -35,7 +35,7 @@ export default function ImpactBento() {
           </p>
         </div>
 
-        <motion.div 
+        <m.div 
           ref={ref}
           variants={container}
           initial="hidden"
@@ -44,7 +44,7 @@ export default function ImpactBento() {
         >
           
           {/* Card 1: Hero Metric (2x2) */}
-          <motion.div 
+          <m.div 
             variants={item}
             className="md:col-span-2 md:row-span-2 bg-white rounded-[2rem] p-8 md:p-12 border border-black/5 shadow-[0_20px_40px_rgba(0,0,0,0.02)] relative overflow-hidden flex flex-col justify-between group"
           >
@@ -75,10 +75,10 @@ export default function ImpactBento() {
                 <path d="M0,100 L0,80 Q25,80 50,60 T100,50 T150,20 L200,0 L200,100 Z" fill="currentColor" />
               </svg>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Card 2: Social Proof Review */}
-          <motion.div 
+          <m.div 
             variants={item}
             className="md:col-span-1 md:row-span-1 bg-[#111] text-white rounded-[2rem] p-8 relative overflow-hidden flex flex-col justify-between"
           >
@@ -105,10 +105,10 @@ export default function ImpactBento() {
                 <div className="text-zinc-400 text-xs uppercase tracking-wider">CEO, Tech Company</div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Card 3: Rule / Custom Code */}
-          <motion.div 
+          <m.div 
             variants={item}
             className="md:col-span-1 md:row-span-1 bg-white rounded-[2rem] p-8 border border-black/5 shadow-[0_10px_30px_rgba(0,0,0,0.02)] flex flex-col justify-between group overflow-hidden relative"
           >
@@ -121,10 +121,10 @@ export default function ImpactBento() {
                 Vaše firma není tuctová. Váš web by neměl být také. Každý pixel a řádek kódu tvoříme 100% na míru.
               </p>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Card 4: Guarantee (Full width bottom on mobile, spans 3 cols) */}
-          <motion.div 
+          <m.div 
             variants={item}
             className="md:col-span-3 md:row-span-1 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[2rem] p-8 md:p-10 text-white relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-8"
           >
@@ -148,9 +148,9 @@ export default function ImpactBento() {
                 Chci vidět rozdíl
               </button>
             </div>
-          </motion.div>
+          </m.div>
 
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

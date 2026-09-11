@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
+import { m, useScroll, useTransform, MotionValue } from "framer-motion";
 import {
   Search,
   Layers,
@@ -82,7 +82,7 @@ function DiscoveryVisual() {
       <div className="absolute inset-0 bg-[radial-gradient(rgba(59,130,246,0.12)_1px,transparent_1px)] bg-[size:28px_28px]" />
       
       {/* Ambient glow */}
-      <motion.div
+      <m.div
         animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         className="absolute w-[300px] h-[300px] bg-blue-400/10 rounded-full blur-[80px]"
@@ -91,7 +91,7 @@ function DiscoveryVisual() {
       {/* SVG connections */}
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
         {connections.map(([a, b], i) => (
-          <motion.line
+          <m.line
             key={i}
             x1={nodes[a].x} y1={nodes[a].y}
             x2={nodes[b].x} y2={nodes[b].y}
@@ -104,7 +104,7 @@ function DiscoveryVisual() {
         ))}
         {/* Animated pulse travelling along first connection */}
         {connections.slice(0, 3).map(([a, b], i) => (
-          <motion.circle
+          <m.circle
             key={`pulse-${i}`}
             r="0.8"
             fill="#3B82F6"
@@ -128,7 +128,7 @@ function DiscoveryVisual() {
       {nodes.map((node, i) => {
         const Icon = node.icon;
         return (
-          <motion.div
+          <m.div
             key={i}
             animate={{
               y: [0, i % 2 === 0 ? -8 : 8, 0],
@@ -152,7 +152,7 @@ function DiscoveryVisual() {
               <Icon className="w-4 h-4 text-blue-500" />
               <span className="text-[8px] font-bold text-zinc-500 tracking-wide uppercase">{node.label}</span>
             </div>
-          </motion.div>
+          </m.div>
         );
       })}
     </div>
@@ -176,14 +176,14 @@ function DesignVisual() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_60%_40%,rgba(139,92,246,0.06),transparent_65%)]" />
 
       <div className="relative z-10" style={{ perspective: 800 }}>
-        <motion.div
+        <m.div
           animate={{ rotateX: [18, 22, 18], rotateY: [-8, -4, -8] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           style={{ transformStyle: "preserve-3d" }}
           className="flex flex-col items-center"
         >
           {layers.map((layer, i) => (
-            <motion.div
+            <m.div
               key={i}
               animate={{ y: [0, i % 2 === 0 ? -3 : 3, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }}
@@ -208,22 +208,22 @@ function DesignVisual() {
                   <div className="w-5 h-1.5 rounded-full" style={{ background: layer.border, opacity: 0.15 }} />
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           ))}
-        </motion.div>
+        </m.div>
       </div>
 
       {/* ZDARMA badge */}
-      <motion.div
+      <m.div
         animate={{ y: [0, -6, 0], rotate: [0, 2, 0] }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         className="absolute top-[14%] right-[12%] z-20 px-3.5 py-1.5 bg-white rounded-xl border border-violet-200 shadow-[0_8px_24px_rgba(139,92,246,0.12)]"
       >
         <span className="text-xs font-black text-violet-600 tracking-wide">ZDARMA 🎁</span>
-      </motion.div>
+      </m.div>
 
       {/* Color palette dots */}
-      <motion.div
+      <m.div
         animate={{ y: [0, 5, 0] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         className="absolute bottom-[16%] left-[10%] flex gap-2"
@@ -231,7 +231,7 @@ function DesignVisual() {
         {["#8B5CF6", "#A78BFA", "#C4B5FD", "#DDD6FE"].map((c, i) => (
           <div key={i} className="w-5 h-5 rounded-full border-2 border-white shadow-sm" style={{ background: c }} />
         ))}
-      </motion.div>
+      </m.div>
     </div>
   );
 }
@@ -277,7 +277,7 @@ function DevVisual() {
       {/* Glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] bg-blue-500/10 blur-[60px] rounded-full" />
 
-      <motion.div
+      <m.div
         animate={{ y: [0, -4, 0] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         className="relative z-10 w-[90%] max-w-[360px] bg-[#161B22] rounded-2xl border border-white/[0.08] shadow-[0_30px_80px_rgba(0,0,0,0.6)] overflow-hidden"
@@ -293,7 +293,7 @@ function DevVisual() {
         {/* Terminal output */}
         <div className="p-4 font-mono text-[11px] leading-[1.8] h-[260px] overflow-hidden">
           {terminalLines.slice(0, visibleLines).map((line, i) => (
-            <motion.div
+            <m.div
               key={`${visibleLines > terminalLines.length ? "r" : ""}${i}`}
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
@@ -302,10 +302,10 @@ function DevVisual() {
               className="whitespace-pre"
             >
               {line.text || "\u00A0"}
-            </motion.div>
+            </m.div>
           ))}
           {/* Blinking cursor */}
-          <motion.span
+          <m.span
             animate={{ opacity: [1, 0, 1] }}
             transition={{ duration: 1, repeat: Infinity }}
             className="inline-block w-2 h-3 bg-blue-400 mt-1"
@@ -320,7 +320,7 @@ function DevVisual() {
           </div>
           <span className="text-[10px] text-white/60 font-mono">Turbopack</span>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 }
@@ -332,7 +332,7 @@ function LaunchVisual() {
   return (
     <div className="relative w-full h-full bg-gradient-to-br from-[#FAFFFE] to-[#ECFDF5] flex items-center justify-center overflow-hidden p-6">
       {/* Ambient */}
-      <motion.div
+      <m.div
         animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         className="absolute w-[250px] h-[250px] bg-emerald-400/15 rounded-full blur-[70px]"
@@ -342,7 +342,7 @@ function LaunchVisual() {
         {/* Top row: Two metric cards */}
         <div className="flex gap-3">
           {/* Revenue card */}
-          <motion.div
+          <m.div
             animate={{ y: [0, -4, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             className="flex-1 bg-white rounded-2xl border border-emerald-100 shadow-[0_8px_30px_rgba(16,185,129,0.06)] p-4"
@@ -353,10 +353,10 @@ function LaunchVisual() {
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-[9px] font-semibold text-emerald-600">Live</span>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Conversion card */}
-          <motion.div
+          <m.div
             animate={{ y: [0, -4, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
             className="flex-1 bg-white rounded-2xl border border-emerald-100 shadow-[0_8px_30px_rgba(16,185,129,0.06)] p-4"
@@ -367,11 +367,11 @@ function LaunchVisual() {
               <ArrowRight className="w-3 h-3 text-emerald-500 -rotate-45" />
               <span className="text-[9px] font-semibold text-emerald-600">+3.2%</span>
             </div>
-          </motion.div>
+          </m.div>
         </div>
 
         {/* Chart card */}
-        <motion.div
+        <m.div
           animate={{ y: [0, -3, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
           className="bg-white rounded-2xl border border-emerald-100 shadow-[0_8px_30px_rgba(16,185,129,0.06)] p-4"
@@ -391,7 +391,7 @@ function LaunchVisual() {
                 </linearGradient>
               </defs>
               {/* Area fill */}
-              <motion.path
+              <m.path
                 d="M0,90 Q30,85 60,78 T120,60 T180,45 T240,25 T300,8 L300,100 L0,100 Z"
                 fill="url(#chartGradient)"
                 initial={{ opacity: 0 }}
@@ -399,7 +399,7 @@ function LaunchVisual() {
                 transition={{ duration: 1.5 }}
               />
               {/* Line */}
-              <motion.path
+              <m.path
                 d="M0,90 Q30,85 60,78 T120,60 T180,45 T240,25 T300,8"
                 fill="none"
                 stroke="#10B981"
@@ -410,7 +410,7 @@ function LaunchVisual() {
                 transition={{ duration: 2.5, ease: "easeOut", repeat: Infinity, repeatDelay: 3 }}
               />
               {/* Active dot */}
-              <motion.circle
+              <m.circle
                 cx="300"
                 cy="8"
                 r="4"
@@ -428,10 +428,10 @@ function LaunchVisual() {
               <span key={m} className="text-[8px] font-semibold text-zinc-300 uppercase tracking-wider">{m}</span>
             ))}
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Checklist */}
-        <motion.div
+        <m.div
           animate={{ y: [0, -3, 0] }}
           transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
           className="bg-white rounded-2xl border border-emerald-100 shadow-[0_8px_30px_rgba(16,185,129,0.06)] p-4 flex flex-col gap-2"
@@ -442,7 +442,7 @@ function LaunchVisual() {
               <span className="text-[11px] font-semibold text-zinc-700">{item}</span>
             </div>
           ))}
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );
@@ -513,7 +513,7 @@ export default function ProcessSection() {
 
           {/* Thin progress bar */}
           <div className="w-full h-[2px] bg-zinc-100 rounded-full overflow-hidden">
-            <motion.div
+            <m.div
               style={{ width: progressWidth }}
               className="h-full bg-gradient-to-r from-blue-500 via-violet-500 to-emerald-500 rounded-full"
             />
@@ -521,14 +521,14 @@ export default function ProcessSection() {
         </header>
 
         {/* ── Horizontal slide track ── */}
-        <motion.div
+        <m.div
           style={{ x }}
           className="flex will-change-transform flex-1"
         >
           {steps.map((step, i) => (
             <SlidePanel key={i} step={step} index={i} visual={visuals[i]} />
           ))}
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );
@@ -627,14 +627,14 @@ function SlidePanel({
         {/* CTA */}
         {index < steps.length - 1 ? (
           <div className="flex items-center gap-2.5 text-sm font-semibold text-zinc-400">
-            <motion.div
+            <m.div
               animate={{ x: [0, 6, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               className="flex items-center gap-2"
             >
               <span>Scrolluj dál</span>
               <ArrowRight className="w-4 h-4" />
-            </motion.div>
+            </m.div>
           </div>
         ) : (
           <a
