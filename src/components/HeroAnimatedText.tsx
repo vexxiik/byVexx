@@ -8,7 +8,7 @@ export default function HeroAnimatedText() {
 
   return (
     <>
-      <h1 className="text-[3.5rem] md:text-[4.5rem] lg:text-[5rem] font-bold tracking-[-0.04em] leading-[1.05] text-[#111] mb-6">
+      <h1 className="text-[2.75rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[5rem] font-bold tracking-[-0.04em] leading-[1.05] text-[#111] mb-6">
         <span className="block overflow-hidden">
           {line1Words.map((word, i) => (
             <m.span

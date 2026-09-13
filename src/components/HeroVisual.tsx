@@ -256,7 +256,7 @@ function PipelineCard() {
 ───────────────────────────────────────────────────────────── */
 export default function HeroVisual() {
   return (
-    <div className="relative w-full h-full flex items-center justify-center p-4">
+    <div className="relative w-full h-auto lg:h-full flex items-center justify-center p-4">
       {/* ── Ambient Glows (Very subtle, locked behind the cards) ── */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[500px] h-[500px] bg-blue-400/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-[60%] left-[60%] -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-indigo-400/10 rounded-full blur-[120px] pointer-events-none" />
@@ -268,7 +268,7 @@ export default function HeroVisual() {
         <RevenueChart />
         
         {/* Row 2: Performance (Square) + Pipeline (Rectangle) */}
-        <div className="grid grid-cols-[200px_1fr] gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-6">
           <PerformanceCard />
           <PipelineCard />
         </div>

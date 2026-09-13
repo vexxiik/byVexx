@@ -4,6 +4,7 @@ import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import Navbar from "@/components/Navbar";
 import MotionProvider from "@/components/MotionProvider";
+import StickyCTA from "@/components/StickyCTA";
 import Script from "next/script";
 
 const inter = Inter({
@@ -49,6 +50,7 @@ export default function RootLayout({
             {children}
           </MotionProvider>
         </SmoothScroll>
+        <StickyCTA />
       </body>
     </html>
   );

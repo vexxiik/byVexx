@@ -14,7 +14,7 @@ export default function HeroVisualWrapper() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.5, ease: 'easeOut', delay: 0.4 }}
-      className="relative w-full h-[500px] lg:h-[640px]"
+      className="relative w-full h-auto min-h-[400px] lg:h-[640px]"
     >
       <HeroVisual />
     </m.div>

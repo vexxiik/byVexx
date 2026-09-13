@@ -454,6 +454,14 @@ function LaunchVisual() {
 export default function ProcessSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const totalSlides = steps.length;
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -486,20 +494,20 @@ export default function ProcessSection() {
     <div
       ref={containerRef}
       className="relative w-full bg-white"
-      style={{ height: `${100 * totalSlides}vh` }}
+      style={{ height: isMobile ? "auto" : `${100 * totalSlides}vh` }}
     >
-      {/* ── Sticky viewport ── */}
-      <div className="sticky top-0 h-screen overflow-hidden flex flex-col pt-24 z-30">
+      {/* ── Viewport ── */}
+      <div className={isMobile ? "flex flex-col pt-16 gap-16" : "sticky top-0 h-screen overflow-hidden flex flex-col pt-24 z-30"}>
 
         {/* ── Header with progress ── */}
-        <header className="shrink-0 w-full px-8 md:px-16 lg:px-24 pb-6 flex flex-col gap-6">
+        <header className="shrink-0 w-full px-6 md:px-16 lg:px-24 pb-2 md:pb-6 flex flex-col gap-6">
           {/* Title row */}
-          <div className="flex items-end justify-between">
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 md:gap-0">
             <div>
               <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-zinc-400 mb-2">
                 Jak to funguje
               </p>
-              <h2 className="text-2xl md:text-[2.5rem] font-bold tracking-tight text-[#111] leading-[1.15]">
+              <h2 className="text-3xl md:text-[2.5rem] font-bold tracking-tight text-[#111] leading-[1.15]">
                 Proces tvorby{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">
                   webu na míru.
@@ -512,7 +520,7 @@ export default function ProcessSection() {
           </div>
 
           {/* Thin progress bar */}
-          <div className="w-full h-[2px] bg-zinc-100 rounded-full overflow-hidden">
+          <div className="hidden md:block w-full h-[2px] bg-zinc-100 rounded-full overflow-hidden">
             <m.div
               style={{ width: progressWidth }}
               className="h-full bg-gradient-to-r from-blue-500 via-violet-500 to-emerald-500 rounded-full"
@@ -520,13 +528,13 @@ export default function ProcessSection() {
           </div>
         </header>
 
-        {/* ── Horizontal slide track ── */}
+        {/* ── Horizontal/Vertical slide track ── */}
         <m.div
-          style={{ x }}
-          className="flex will-change-transform flex-1"
+          style={{ x: isMobile ? 0 : x }}
+          className={`flex will-change-transform flex-1 ${isMobile ? "flex-col gap-12 pb-12" : ""}`}
         >
           {steps.map((step, i) => (
-            <SlidePanel key={i} step={step} index={i} visual={visuals[i]} />
+            <SlidePanel key={i} step={step} index={i} visual={visuals[i]} isMobile={isMobile} />
           ))}
         </m.div>
       </div>
@@ -579,19 +587,21 @@ function SlidePanel({
   step,
   index,
   visual,
+  isMobile,
 }: {
   step: (typeof steps)[0];
   index: number;
   visual: React.ReactNode;
+  isMobile?: boolean;
 }) {
   const Icon = step.icon;
 
   return (
-    <div className="shrink-0 w-[100vw] h-full flex items-center px-8 md:px-16 lg:px-24 gap-12 lg:gap-20">
+    <div className={`shrink-0 w-full md:w-[100vw] ${isMobile ? "h-auto" : "h-full"} flex items-center px-6 md:px-16 lg:px-24 gap-12 lg:gap-20`}>
       {/* Left – Text */}
       <div className="flex-1 max-w-lg flex flex-col justify-center">
         {/* Tag chip */}
-        <div className="flex items-center gap-3 mb-8">
+        <div className="flex items-center gap-3 mb-6 md:mb-8">
           <div
             className="w-11 h-11 rounded-xl flex items-center justify-center border"
             style={{ background: step.accentLight, borderColor: `${step.accent}20` }}
@@ -607,26 +617,26 @@ function SlidePanel({
         </div>
 
         {/* Number + Title */}
-        <div className="flex items-baseline gap-5 mb-5">
+        <div className="flex items-baseline gap-4 md:gap-5 mb-4 md:mb-5">
           <span
-            className="text-[4.5rem] md:text-[5.5rem] font-black leading-none tracking-tighter select-none"
+            className="text-[3.5rem] md:text-[5.5rem] font-black leading-none tracking-tighter select-none"
             style={{ color: step.accent, opacity: 0.06 }}
           >
             {step.num}
           </span>
-          <h3 className="text-[1.75rem] md:text-[2.2rem] font-bold tracking-tight text-[#111] leading-[1.15]">
+          <h3 className="text-[1.5rem] md:text-[2.2rem] font-bold tracking-tight text-[#111] leading-[1.15]">
             {step.label}
           </h3>
         </div>
 
         {/* Body */}
-        <p className="text-[1.05rem] text-zinc-500 font-light leading-relaxed mb-10 max-w-md">
+        <p className="text-[1rem] md:text-[1.05rem] text-zinc-500 font-light leading-relaxed mb-8 md:mb-10 max-w-md">
           {step.text}
         </p>
 
         {/* CTA */}
         {index < steps.length - 1 ? (
-          <div className="flex items-center gap-2.5 text-sm font-semibold text-zinc-400">
+          <div className="hidden md:flex items-center gap-2.5 text-sm font-semibold text-zinc-400">
             <m.div
               animate={{ x: [0, 6, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
