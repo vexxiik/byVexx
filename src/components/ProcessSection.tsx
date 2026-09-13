@@ -619,8 +619,8 @@ function SlidePanel({
         {/* Number + Title */}
         <div className="flex items-baseline gap-4 md:gap-5 mb-4 md:mb-5">
           <span
-            className="text-[3.5rem] md:text-[5.5rem] font-black leading-none tracking-tighter select-none"
-            style={{ color: step.accent, opacity: 0.06 }}
+            className="text-[4.5rem] md:text-[7rem] font-black leading-none tracking-tighter select-none"
+            style={{ color: step.accent, opacity: 0.15 }}
           >
             {step.num}
           </span>

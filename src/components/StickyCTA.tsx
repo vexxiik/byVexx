@@ -23,19 +23,16 @@ export default function StickyCTA() {
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 p-4 md:hidden transition-transform duration-500 ease-in-out ${
-        isVisible ? 'translate-y-0' : 'translate-y-full'
+      className={`fixed bottom-8 left-6 z-50 md:hidden transition-transform duration-500 ease-in-out ${
+        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'
       }`}
     >
-      {/* Frosted glass background for better readability */}
-      <div className="absolute inset-0 bg-white/70 backdrop-blur-md border-t border-zinc-200/50 -z-10" />
-      
       <Link
         href="#contact"
-        className="group relative flex items-center justify-center gap-2 h-14 px-8 rounded-full overflow-hidden transition-transform active:scale-95 w-full bg-[#111] shadow-lg"
+        className="group relative flex items-center justify-center gap-2 h-14 px-8 rounded-full overflow-hidden transition-transform active:scale-95 bg-[#3b82f6] hover:bg-[#2563eb] shadow-[0_8px_30px_rgba(59,130,246,0.4)]"
       >
-        <span className="relative z-10 text-sm tracking-wide text-white font-medium">
-          Chci web, co vydělává
+        <span className="relative z-10 text-sm tracking-wide text-white font-bold">
+          Návrh zdarma
         </span>
         <ArrowRight className="relative z-10 w-4 h-4 text-white group-hover:translate-x-1 transition-transform duration-300" />
       </Link>

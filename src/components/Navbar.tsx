@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { SterlingGateKineticNavigation } from './ui/sterling-gate-kinetic-navigation';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -57,10 +58,14 @@ export default function Navbar() {
 
       <Link
         href="/#contact"
-        className="relative overflow-hidden text-xs sm:text-sm font-semibold text-white bg-[#3b82f6] px-4 py-2 sm:px-6 sm:py-2.5 rounded-full hover:bg-[#2563eb] transition-all hover:scale-105 shadow-[0_4px_14px_rgba(59,130,246,0.4)] flex-shrink-0"
+        className="hidden md:flex relative overflow-hidden text-xs sm:text-sm font-semibold text-white bg-[#3b82f6] px-4 py-2 sm:px-6 sm:py-2.5 rounded-full hover:bg-[#2563eb] transition-all hover:scale-105 shadow-[0_4px_14px_rgba(59,130,246,0.4)] flex-shrink-0"
       >
         NÁVRH ZDARMA
       </Link>
+      
+      <div className="md:hidden">
+        <SterlingGateKineticNavigation />
+      </div>
     </nav>
   );
 }

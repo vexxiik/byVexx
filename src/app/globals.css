@@ -74,3 +74,31 @@ body {
 .animate-float-subtle {
   animation: float-subtle 4s ease-in-out infinite;
 }
+
+/* ── Living Dashboard Card Levitation ── */
+@keyframes float-card-1 {
+  0%, 100% { transform: translateY(0px) rotate(-0.5deg); }
+  50% { transform: translateY(-6px) rotate(-0.3deg); }
+}
+@keyframes float-card-2 {
+  0%, 100% { transform: translateY(0px) rotate(0.3deg); }
+  50% { transform: translateY(-8px) rotate(0.5deg); }
+}
+@keyframes float-card-3 {
+  0%, 100% { transform: translateY(0px) rotate(0.5deg); }
+  50% { transform: translateY(-5px) rotate(0.3deg); }
+}
+@keyframes float-card-4 {
+  0%, 100% { transform: translateY(0px) rotate(-0.8deg); }
+  50% { transform: translateY(-7px) rotate(-0.5deg); }
+}
+@keyframes float-card-5 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float-card-1 { animation: float-card-1 6s ease-in-out infinite; }
+.animate-float-card-2 { animation: float-card-2 7s ease-in-out infinite; }
+.animate-float-card-3 { animation: float-card-3 8s ease-in-out infinite; }
+.animate-float-card-4 { animation: float-card-4 5s ease-in-out infinite; }
+.animate-float-card-5 { animation: float-card-5 9s ease-in-out infinite; }

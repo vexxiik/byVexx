@@ -1,12 +1,66 @@
 "use client";
 
-import React, { useRef } from "react";
-import { m, useInView, Variants } from "framer-motion";
+import React, { useRef, useEffect } from "react";
+import { m, useInView, Variants, useMotionValue, useTransform, animate } from "framer-motion";
 import { TrendingUp, Quote, Code2, PenTool, Star } from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { TextPlugin } from "gsap/TextPlugin";
 
 export default function ImpactBento() {
   const ref = useRef(null);
+  const textRef = useRef<HTMLParagraphElement>(null);
+  const codeIconRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, Math.round);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger, TextPlugin);
+
+    if (textRef.current) {
+      const originalText = '"Zapomeňte na běžné kodéry. Vexx chápe byznys. Web se zaplatil v prvním měsíci provozu."';
+      
+      gsap.to(textRef.current, {
+        text: originalText,
+        duration: 3,
+        ease: "none",
+        scrollTrigger: {
+          trigger: textRef.current,
+          start: "top 85%",
+          once: true
+        }
+      });
+    }
+
+    if (codeIconRef.current) {
+      gsap.fromTo(codeIconRef.current, 
+        { rotate: -20, scale: 0.8 },
+        { 
+          rotate: 0, 
+          scale: 1, 
+          duration: 1, 
+          ease: "elastic.out(1, 0.3)",
+          scrollTrigger: {
+            trigger: codeIconRef.current,
+            start: "top 85%",
+            once: true
+          }
+        }
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isInView) {
+      const animation = animate(count, 215, {
+        duration: 2.5,
+        ease: "easeOut",
+      });
+      return animation.stop;
+    }
+  }, [isInView, count]);
 
   const container: Variants = {
     hidden: { opacity: 0 },
@@ -56,8 +110,8 @@ export default function ImpactBento() {
               </div>
               <p className="text-zinc-500 font-medium tracking-wide uppercase text-sm mb-2">Průměrný nárůst poptávek</p>
               <div className="flex items-baseline gap-2">
-                <h3 className="text-[5rem] md:text-[7rem] font-black tracking-tighter text-[#111] leading-none">
-                  +215
+                <h3 className="text-[5rem] md:text-[7rem] font-black tracking-tighter text-[#111] leading-none flex">
+                  +<m.span>{rounded}</m.span>
                 </h3>
                 <span className="text-4xl md:text-5xl font-bold text-blue-600">%</span>
               </div>
@@ -90,10 +144,8 @@ export default function ImpactBento() {
               ))}
             </div>
             
-            <div className="relative z-10 flex-1 flex items-center">
-              <p className="text-xl font-medium leading-tight">
-                "Zapomeňte na běžné kodéry. Vexx chápe byznys. Web se zaplatil v prvním měsíci provozu."
-              </p>
+            <div className="relative z-10 flex-1 flex items-center min-h-[100px]">
+              <p ref={textRef} className="text-xl font-medium leading-tight"></p>
             </div>
 
             <div className="relative z-10 flex items-center gap-3 mt-6">
@@ -112,7 +164,7 @@ export default function ImpactBento() {
             variants={item}
             className="md:col-span-1 md:row-span-1 bg-white rounded-[2rem] p-8 border border-black/5 shadow-[0_10px_30px_rgba(0,0,0,0.02)] flex flex-col justify-between group overflow-hidden relative"
           >
-            <div className="w-12 h-12 rounded-2xl bg-zinc-50 text-zinc-900 flex items-center justify-center mb-4 border border-zinc-100 group-hover:scale-110 group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100 transition-all duration-500">
+            <div ref={codeIconRef} className="w-12 h-12 rounded-2xl bg-zinc-50 text-zinc-900 flex items-center justify-center mb-4 border border-zinc-100 group-hover:scale-110 group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100 transition-all duration-500">
               <Code2 className="w-6 h-6" />
             </div>
             <div>
