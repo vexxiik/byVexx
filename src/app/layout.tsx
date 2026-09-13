@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import MotionProvider from "@/components/MotionProvider";
 import StickyCTA from "@/components/StickyCTA";
 import Script from "next/script";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -51,6 +52,7 @@ export default function RootLayout({
           </MotionProvider>
         </SmoothScroll>
         <StickyCTA />
+        <SpeedInsights />
       </body>
     </html>
   );
