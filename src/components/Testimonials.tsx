@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { m, useInView, useMotionValue, useTransform, animate } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -14,7 +15,6 @@ const projects = [
     category: 'E-commerce platforma',
     description: 'E-commerce platforma zaměřená na prémiovou prezentaci materiálů a zakázkovou stavbu luxusních hodinek.',
     link: 'https://www.vexxwatch.cz/',
-    // Cesty k úvodním (hero) fotkám webů ze složky public
     image: '/vexx%20watch.png',
     logoText: 'VW',
     logoColor: 'bg-black text-white',
@@ -54,48 +54,237 @@ const projects = [
   }
 ];
 
-// Circular progress component for audit scores
-const CircularProgress = ({ value, label }: { value: number; label: string }) => {
-  const radius = 28;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (value / 100) * circumference;
+/* ─── Lighthouse Dashboard Micro-UI ─── */
+
+const AnimatedNumber = ({ value, isVisible }: { value: number; isVisible: boolean }) => {
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, Math.round);
+
+  useEffect(() => {
+    if (isVisible) {
+      const animation = animate(count, value, {
+        duration: 1.8,
+        ease: "easeOut",
+        delay: 0.3,
+      });
+      return animation.stop;
+    }
+  }, [isVisible, count, value]);
+
+  return <m.span>{rounded}</m.span>;
+};
+
+const LighthouseBar = ({ 
+  value, 
+  label, 
+  delay = 0, 
+  isVisible 
+}: { 
+  value: number; 
+  label: string; 
+  delay?: number; 
+  isVisible: boolean;
+}) => {
+  const barColor = value >= 90 ? 'bg-emerald-500' : value >= 50 ? 'bg-amber-500' : 'bg-red-500';
+  const textColor = value >= 90 ? 'text-emerald-600' : value >= 50 ? 'text-amber-600' : 'text-red-600';
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="relative w-20 h-20 flex items-center justify-center rounded-full bg-white shadow-[0_4px_20px_rgb(0,0,0,0.05)] border border-black/5">
-        <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 64 64">
-          {/* Background track */}
-          <circle 
-            cx="32" cy="32" r={radius} 
-            stroke="#d1fae5" strokeWidth="4" fill="transparent" 
-          />
-          {/* Progress */}
-          <circle 
-            cx="32" cy="32" r={radius} 
-            stroke="#10b981" strokeWidth="4" fill="transparent" 
-            strokeDasharray={circumference} 
-            strokeDashoffset={strokeDashoffset} 
-            strokeLinecap="round"
-            className="transition-all duration-1000 ease-out"
-          />
-        </svg>
-        <span className="absolute text-lg font-bold text-[#171717]">{value}</span>
+    <div className="flex items-center gap-4">
+      <div className="w-28 shrink-0">
+        <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#a1a1aa]">{label}</span>
       </div>
-      <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-[#a1a1aa] mt-4 text-center">{label}</span>
+      <div className="flex-1 h-2.5 bg-zinc-100 rounded-full overflow-hidden relative">
+        <m.div
+          className={`h-full rounded-full ${barColor}`}
+          initial={{ width: 0 }}
+          animate={isVisible ? { width: `${value}%` } : { width: 0 }}
+          transition={{ duration: 1.5, delay: delay + 0.2, ease: [0.22, 1, 0.36, 1] }}
+        />
+      </div>
+      <div className={`w-10 text-right text-sm font-black tabular-nums ${textColor}`}>
+        <AnimatedNumber value={value} isVisible={isVisible} />
+      </div>
     </div>
   );
 };
 
+const LighthouseDashboard = ({ audit, isVisible }: { 
+  audit: { performance: number; accessibility: number; bestPractices: number; seo: number };
+  isVisible: boolean;
+}) => {
+  const avgScore = Math.round((audit.performance + audit.accessibility + audit.bestPractices + audit.seo) / 4);
+
+  return (
+    <div className="bg-[#fcfcfc] rounded-[2rem] p-6 shadow-sm border border-black/5 flex flex-col gap-5">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-[#a1a1aa] text-xs font-bold tracking-widest uppercase">
+          {/* Pulsing live dot */}
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          Lighthouse Audit
+        </div>
+        <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border border-emerald-100">
+          Score: {avgScore}
+        </div>
+      </div>
+
+      {/* Bars */}
+      <div className="flex flex-col gap-3.5 py-2">
+        <LighthouseBar value={audit.performance} label="Výkon" delay={0} isVisible={isVisible} />
+        <LighthouseBar value={audit.accessibility} label="Přístupnost" delay={0.1} isVisible={isVisible} />
+        <LighthouseBar value={audit.bestPractices} label="Best Practices" delay={0.2} isVisible={isVisible} />
+        <LighthouseBar value={audit.seo} label="SEO" delay={0.3} isVisible={isVisible} />
+      </div>
+
+      {/* Footer micro-detail */}
+      <div className="flex items-center justify-between pt-2 border-t border-zinc-100">
+        <span className="text-[10px] text-zinc-400 font-medium">Aktualizováno právě teď</span>
+        <div className="flex items-center gap-1">
+          {[audit.performance, audit.accessibility, audit.bestPractices, audit.seo].map((v, i) => (
+            <div
+              key={i}
+              className={`w-1.5 h-1.5 rounded-full ${v >= 90 ? 'bg-emerald-400' : v >= 50 ? 'bg-amber-400' : 'bg-red-400'}`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─── Orbit Rotation Tech Stack ─── */
+
+interface StackItem {
+  name: string;
+  iconUrl?: string;
+  svg?: React.ReactNode;
+  symbol?: string;
+}
+
+const OrbitTechStack = ({ stack }: { stack: StackItem[] }) => {
+  const innerOrbit = stack.slice(0, 4);
+  const outerOrbit = stack.slice(4);
+  
+  // Find center icon — prefer Next.js or first item
+  const centerItem = stack.find(s => s.name === 'NEXT.JS' || s.name === 'REACT') || stack[0];
+
+  return (
+    <div className="bg-[#fcfcfc] rounded-[2rem] p-6 shadow-sm border border-black/5">
+      <div className="flex items-center gap-2 text-[#a1a1aa] text-xs font-bold tracking-widest uppercase ml-2 mb-4">
+        <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+        Tech Stack
+      </div>
+      
+      <div className="relative flex items-center justify-center h-[280px] overflow-hidden">
+        {/* Center Hub */}
+        <div className="absolute z-20 flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-black/5">
+          {centerItem.iconUrl ? (
+            <img src={centerItem.iconUrl} alt={centerItem.name} className="w-7 h-7" />
+          ) : centerItem.svg ? (
+            <div className="w-7 h-7 flex items-center justify-center">{centerItem.svg}</div>
+          ) : (
+            <span className="text-lg font-black text-[#171717]">{centerItem.symbol}</span>
+          )}
+        </div>
+
+        {/* Inner Orbit */}
+        <div
+          className="absolute rounded-full border-2 border-dashed border-zinc-200"
+          style={{
+            width: '10rem',
+            height: '10rem',
+            animation: 'orbit-spin 18s linear infinite',
+          }}
+        >
+          {innerOrbit.map((tech, i) => {
+            const angle = (i / innerOrbit.length) * 2 * Math.PI;
+            const x = 50 + 50 * Math.cos(angle);
+            const y = 50 + 50 * Math.sin(angle);
+            return (
+              <div
+                key={tech.name}
+                className="absolute"
+                style={{
+                  left: `${x}%`,
+                  top: `${y}%`,
+                  animation: 'orbit-counter-spin 18s linear infinite',
+                }}
+              >
+                <div className="w-10 h-10 rounded-full bg-white shadow-[0_2px_10px_rgba(0,0,0,0.06)] border border-black/5 flex items-center justify-center">
+                  {tech.iconUrl ? (
+                    <img src={tech.iconUrl} alt={tech.name} className="w-5 h-5" />
+                  ) : tech.svg ? (
+                    <div className="w-5 h-5 flex items-center justify-center">{tech.svg}</div>
+                  ) : (
+                    <span className="text-xs font-bold text-[#171717]">{tech.symbol}</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Outer Orbit */}
+        <div
+          className="absolute rounded-full border-2 border-dashed border-zinc-100"
+          style={{
+            width: '18rem',
+            height: '18rem',
+            animation: 'orbit-spin 30s linear infinite reverse',
+          }}
+        >
+          {outerOrbit.map((tech, i) => {
+            const angle = (i / outerOrbit.length) * 2 * Math.PI;
+            const x = 50 + 50 * Math.cos(angle);
+            const y = 50 + 50 * Math.sin(angle);
+            return (
+              <div
+                key={tech.name}
+                className="absolute"
+                style={{
+                  left: `${x}%`,
+                  top: `${y}%`,
+                  animation: 'orbit-counter-spin 30s linear infinite reverse',
+                }}
+              >
+                <div className="w-9 h-9 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-black/5 flex items-center justify-center">
+                  {tech.iconUrl ? (
+                    <img src={tech.iconUrl} alt={tech.name} className="w-4 h-4" />
+                  ) : tech.svg ? (
+                    <div className="w-4 h-4 flex items-center justify-center">{tech.svg}</div>
+                  ) : (
+                    <span className="text-[10px] font-bold text-[#171717]">{tech.symbol}</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Ripple rings */}
+        <div className="absolute w-[10rem] h-[10rem] rounded-full border border-zinc-100/50 pointer-events-none" />
+        <div className="absolute w-[14rem] h-[14rem] rounded-full border border-zinc-100/30 pointer-events-none" />
+      </div>
+    </div>
+  );
+};
+
+/* ─── Main Component ─── */
+
 export default function Testimonials() {
   const containerRef = useRef<HTMLDivElement>(null);
   const leftColRef = useRef<HTMLDivElement>(null);
-  const stackRef = useRef<HTMLDivElement>(null);
+  const auditRef = useRef<HTMLDivElement>(null);
   const [activeId, setActiveId] = useState(projects[0].id);
+  
+  const auditInView = useInView(auditRef, { once: true, margin: "-80px" });
 
   const activeProject = projects.find(p => p.id === activeId) || projects[0];
 
   useEffect(() => {
-    // Initial reveal animation
     const el = containerRef.current;
     if (el) {
       gsap.fromTo(
@@ -115,13 +304,12 @@ export default function Testimonials() {
     }
   }, []);
 
-  // Animate content when project changes
   useEffect(() => {
-    if (leftColRef.current && stackRef.current) {
+    if (leftColRef.current) {
       gsap.fromTo(
-        [leftColRef.current, stackRef.current],
+        leftColRef.current,
         { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', stagger: 0.1 }
+        { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
       );
     }
   }, [activeId]);
@@ -149,13 +337,11 @@ export default function Testimonials() {
               
               {/* Image window */}
               <div className="w-full aspect-[16/9] bg-black rounded-[1.5rem] overflow-hidden relative shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-                {/* Black Mac Window Header */}
                 <div className="absolute top-0 left-0 w-full h-8 bg-[#171717] flex items-center px-4 gap-1.5 z-20 border-b border-white/5">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#ef4444]"></div>
                   <div className="w-2.5 h-2.5 rounded-full bg-[#eab308]"></div>
                   <div className="w-2.5 h-2.5 rounded-full bg-[#22c55e]"></div>
                 </div>
-                {/* Screenshot Container */}
                 <div className="w-full h-full pt-8">
                   <img 
                     src={activeProject.image} 
@@ -179,30 +365,23 @@ export default function Testimonials() {
                     {activeProject.description}
                   </p>
                 </div>
+                {/* Shine Hover Premium Button */}
                 <a 
                   href={activeProject.link} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="shrink-0 flex items-center justify-center gap-2 bg-[#171717] text-white px-6 py-3.5 rounded-full text-sm font-bold hover:bg-black transition-all hover:scale-105 shadow-md"
+                  className="shrink-0 flex items-center justify-center gap-2.5 bg-[#171717] text-white px-7 py-4 rounded-full text-sm font-bold tracking-wide shadow-[0_4px_20px_rgba(0,0,0,0.15)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.25)] transition-all duration-500 relative overflow-hidden before:absolute before:inset-0 before:rounded-[inherit] before:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.3)_50%,transparent_75%,transparent_100%)] before:bg-[length:250%_250%,100%_100%] before:bg-[position:200%_0,0_0] before:bg-no-repeat before:[transition:background-position_0s_ease] before:duration-[1s] hover:before:bg-[position:-100%_0,0_0] group"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                  <svg className="w-4 h-4 transition-transform duration-300 group-hover:rotate-[20deg]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
                   ŽIVÝ WEB
+                  <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"></path></svg>
                 </a>
               </div>
             </div>
 
-            {/* Technical Audit Card */}
-            <div className="bg-[#fcfcfc] rounded-[2rem] p-6 shadow-sm border border-black/5 flex flex-col gap-6">
-              <div className="flex items-center gap-2 text-[#a1a1aa] text-xs font-bold tracking-widest uppercase ml-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                Technický audit
-              </div>
-              <div className="grid grid-cols-2 md:flex md:flex-wrap justify-around items-center py-4 gap-y-8 gap-x-2">
-                <CircularProgress value={activeProject.audit.performance} label="Výkon" />
-                <CircularProgress value={activeProject.audit.accessibility} label="Přístupnost" />
-                <CircularProgress value={activeProject.audit.bestPractices} label="Doporučené postupy" />
-                <CircularProgress value={activeProject.audit.seo} label="SEO" />
-              </div>
+            {/* Lighthouse Dashboard Micro-UI */}
+            <div ref={auditRef}>
+              <LighthouseDashboard audit={activeProject.audit} isVisible={auditInView} />
             </div>
 
           </div>
@@ -245,39 +424,8 @@ export default function Testimonials() {
               </div>
             </div>
 
-            {/* Stack Card */}
-            <div className="bg-[#fcfcfc] rounded-[2rem] p-6 shadow-sm border border-black/5">
-              <div ref={stackRef}>
-                <div className="grid grid-cols-3 gap-y-8 gap-x-2 relative items-center justify-items-center py-6">
-                  {activeProject.stack.slice(0,4).map(tech => (
-                    <div key={tech.name} className="flex flex-col items-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-[#f4f4f5] flex items-center justify-center text-lg font-bold text-[#171717] border border-black/5 shadow-sm">
-                        {tech.iconUrl ? <img src={tech.iconUrl} alt={tech.name} className="w-5 h-5" /> : tech.svg ? tech.svg : tech.symbol}
-                      </div>
-                      <span className="text-[8px] font-bold tracking-widest text-[#a1a1aa]">{tech.name}</span>
-                    </div>
-                  ))}
-
-                  {/* Center Hub */}
-                  <div className="flex flex-col items-center justify-center w-24 h-24 rounded-full bg-[#f4f4f5] shadow-inner border border-black/5 z-10 relative">
-                    <svg className="w-6 h-6 text-[#171717] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-                    <span className="text-[9px] font-bold text-[#171717] uppercase text-center leading-tight">Stack<br/>Devstack</span>
-                    {/* Ripple effect rings */}
-                    <div className="absolute inset-0 rounded-full border border-black/5 scale-[1.3] -z-10"></div>
-                    <div className="absolute inset-0 rounded-full border border-black/5 scale-[1.6] -z-10"></div>
-                  </div>
-
-                  {activeProject.stack.slice(4).map(tech => (
-                    <div key={tech.name} className="flex flex-col items-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-[#f4f4f5] flex items-center justify-center text-lg font-bold text-[#171717] border border-black/5 shadow-sm">
-                        {tech.iconUrl ? <img src={tech.iconUrl} alt={tech.name} className="w-5 h-5" /> : tech.svg ? tech.svg : tech.symbol}
-                      </div>
-                      <span className="text-[8px] font-bold tracking-widest text-[#a1a1aa]">{tech.name}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            {/* Orbiting Tech Stack */}
+            <OrbitTechStack stack={activeProject.stack} />
 
           </div>
         </div>

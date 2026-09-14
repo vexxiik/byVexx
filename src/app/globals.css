@@ -102,3 +102,13 @@ body {
 .animate-float-card-3 { animation: float-card-3 8s ease-in-out infinite; }
 .animate-float-card-4 { animation: float-card-4 5s ease-in-out infinite; }
 .animate-float-card-5 { animation: float-card-5 9s ease-in-out infinite; }
+
+/* ── Orbit Rotation for Tech Stack ── */
+@keyframes orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes orbit-counter-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(-360deg); }
+}
