@@ -85,11 +85,11 @@ export default function ImpactBento() {
         
         <div className="mb-16 md:mb-20">
           <h2 className="text-[2.5rem] md:text-[3.5rem] font-bold tracking-tight leading-[1.1] mb-6 max-w-2xl">
-            Neměříme <span className="text-zinc-400 line-through decoration-zinc-300">návštěvy.</span><br />
-            Měříme <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">váš obrat.</span>
+            Neměříme <span className="text-zinc-400 line-through decoration-zinc-300 hidden sm:inline">návštěvy.</span><br className="hidden sm:block" />
+            <span className="sm:hidden">návštěvy. </span>Měříme <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">váš obrat.</span>
           </h2>
-          <p className="text-lg md:text-xl text-zinc-500 font-light leading-relaxed max-w-2xl">
-            Hezký design je k ničemu, pokud negeneruje zisk. Naše weby jsou postavené od základu jako vysoce konverzní stroje.
+          <p className="text-base sm:text-lg md:text-xl text-zinc-500 font-light leading-relaxed max-w-2xl">
+            Hezký design je k ničemu, pokud negeneruje zisk. <br className="hidden sm:block" />Naše weby jsou postavené od základu jako vysoce konverzní stroje.
           </p>
         </div>
 
