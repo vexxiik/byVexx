@@ -666,7 +666,7 @@ export default function HeroVisual() {
         </div>
         
         {/* Row 2: Funnel + Activity Feed */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="flex flex-col md:grid md:grid-cols-2 gap-5">
           <div className="hidden md:block">
             <FunnelCard />
           </div>
@@ -674,7 +674,7 @@ export default function HeroVisual() {
         </div>
 
         {/* Row 3: Performance Chart + Status Beacon */}
-        <div className="hidden md:flex flex-col sm:flex-row items-start sm:items-end gap-5">
+        <div className="hidden md:flex flex-col md:flex-row items-start md:items-end gap-5">
           <div className="w-full sm:w-[55%]">
             <PerformanceChartCard />
           </div>

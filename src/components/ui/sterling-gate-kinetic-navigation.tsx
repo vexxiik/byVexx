@@ -14,7 +14,7 @@ if (typeof window !== "undefined") {
 // Isomorphic layout effect for SSR safety
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
-export const SterlingGateKineticNavigation = React.memo(function SterlingGateKineticNavigation() {
+export function SterlingGateKineticNavigation() {
   const containerRef = useRef<HTMLDivElement>(null);
   const tl = useRef<gsap.core.Timeline | null>(null);
   
@@ -213,5 +213,5 @@ export const SterlingGateKineticNavigation = React.memo(function SterlingGateKin
       )}
     </div>
   );
-});
+}
 

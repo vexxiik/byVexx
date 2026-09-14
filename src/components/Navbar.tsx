@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { SterlingGateKineticNavigation } from './ui/sterling-gate-kinetic-navigation';
+import { MobileNavigation } from './ui/mobile-navigation';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -64,7 +64,7 @@ export default function Navbar() {
       </Link>
       
       <div className="md:hidden">
-        <SterlingGateKineticNavigation />
+        <MobileNavigation />
       </div>
     </nav>
   );

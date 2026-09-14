@@ -85,11 +85,11 @@ export default function ImpactBento() {
         
         <div className="mb-16 md:mb-20">
           <h2 className="text-[2.5rem] md:text-[3.5rem] font-bold tracking-tight leading-[1.1] mb-6 max-w-2xl">
-            Neměříme <span className="text-zinc-400 line-through decoration-zinc-300 hidden sm:inline">návštěvy.</span><br className="hidden sm:block" />
-            <span className="sm:hidden">návštěvy. </span>Měříme <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">váš obrat.</span>
+            Neměříme <span className="text-zinc-400 line-through decoration-zinc-300">návštěvy.</span><br />
+            Měříme <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">váš obrat.</span>
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-zinc-500 font-light leading-relaxed max-w-2xl">
-            Hezký design je k ničemu, pokud negeneruje zisk. <br className="hidden sm:block" />Naše weby jsou postavené od základu jako vysoce konverzní stroje.
+          <p className="text-lg md:text-xl text-zinc-500 font-light leading-relaxed max-w-2xl">
+            Hezký design je k ničemu, pokud negeneruje zisk. Naše weby jsou postavené od základu jako vysoce konverzní stroje.
           </p>
         </div>
 
@@ -99,7 +99,7 @@ export default function ImpactBento() {
           initial="hidden"
           animate={isInView ? "show" : "hidden"}
           style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[240px]"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 md:auto-rows-[240px]"
         >
           
           {/* Card 1: Hero Metric (2x2) */}
@@ -201,9 +201,9 @@ export default function ImpactBento() {
             </div>
 
             <div className="relative z-10 shrink-0">
-              <a href="#contact" className="inline-block px-8 py-4 rounded-full bg-white text-blue-600 font-bold tracking-wide hover:scale-105 transition-transform duration-300 shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_15px_30px_rgba(255,255,255,0.2)]">
+              <button className="px-8 py-4 rounded-full bg-white text-blue-600 font-bold tracking-wide hover:scale-105 transition-transform duration-300 shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_15px_30px_rgba(255,255,255,0.2)]">
                 Chci vidět rozdíl
-              </a>
+              </button>
             </div>
           </m.div>
 
