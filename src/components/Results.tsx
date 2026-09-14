@@ -147,7 +147,7 @@ export default function Results() {
                   </div>
                   <h3 className="text-3xl font-bold tracking-tight mb-4 text-[#111]">Nezastavitelná infrastruktura</h3>
                   <p className="text-zinc-500 leading-relaxed font-light mb-8">
-                    Žádný sdílený hosting, který spadne při první kampani. Nasazujeme škálovatelné cloudové architektury, které dynamicky reagují na návštěvnost. Serverless funkce, distribuované databáze a Redis caching.
+                    Žádný levný sdílený hosting, který spadne při první kampani. Vaše aplikace běží na prémiové cloudové síti Vercel. Využíváme moderní Next.js Serverless funkce pro bleskové zpracování formulářů, bezpečné odesílání dat a absolutní stabilitu celého systému.
                   </p>
                   
                   <div className="grid grid-cols-2 gap-8">

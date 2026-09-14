@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 import { m, useInView, useMotionValue, useTransform, animate } from 'framer-motion';
 import gsap from 'gsap';
@@ -353,11 +354,14 @@ export default function Testimonials() {
                   <div className="w-2.5 h-2.5 rounded-full bg-[#eab308]"></div>
                   <div className="w-2.5 h-2.5 rounded-full bg-[#22c55e]"></div>
                 </div>
-                <div className="w-full h-full pt-8">
-                  <img 
+                <div className="absolute top-8 left-0 right-0 bottom-0">
+                  <Image 
                     src={activeProject.image} 
                     alt={activeProject.fullName}
-                    className="w-full h-full object-cover object-top opacity-95 hover:opacity-100 transition-opacity duration-300" 
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 66vw"
+                    className="object-cover object-top opacity-95 hover:opacity-100 transition-opacity duration-300" 
                   />
                 </div>
               </div>
