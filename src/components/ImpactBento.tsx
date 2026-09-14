@@ -183,7 +183,7 @@ export default function ImpactBento() {
           {/* Card 4: Guarantee (Full width bottom on mobile, spans 3 cols) */}
           <m.div 
             variants={item}
-            className="md:col-span-3 md:row-span-1 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[2rem] p-6 sm:p-8 md:p-10 text-white relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-8"
+            className="md:col-span-3 md:row-span-1 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[2rem] p-8 md:p-10 text-white relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-8"
           >
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
             <div className="absolute right-0 top-0 w-1/2 h-full bg-white/5 blur-3xl rounded-full transform translate-x-1/4 -translate-y-1/4" />
@@ -193,7 +193,9 @@ export default function ImpactBento() {
                 <PenTool className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h4 className="text-[1.35rem] leading-tight sm:text-2xl md:text-3xl font-bold tracking-tight mb-3">Psychologický copywriting v ceně.</h4>
+                <h4 className="text-[1.75rem] leading-[1.2] md:text-3xl font-bold tracking-tight mb-4">
+                  Psychologický<br className="block md:hidden" /> copywriting v ceně.
+                </h4>
                 <p className="text-blue-100 text-lg font-light leading-relaxed">
                   Běžné agentury píší texty, aby zaplnily prázdné místo na obrazovce. My píšeme texty, které odstraňují námitky a nutí klienty poptat.
                 </p>
