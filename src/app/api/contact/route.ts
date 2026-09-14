@@ -8,7 +8,7 @@ const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_key');
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, message } = body;
+    const { name, email, message, isUrgent } = body;
 
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
@@ -18,10 +18,11 @@ export async function POST(req: Request) {
 
     // Send the immediate Welcome Email
     const welcomeData = await resend.emails.send({
-      from: 'onboarding@resend.dev',
-      to: 'jakub.sokol2007@gmail.com',
+      from: 'Vexx <noreply@vexx.cz>',
+      to: email,
+      bcc: 'jakub.sokol2007@gmail.com', // Skrytá kopie pro majitele webu
       subject: 'Vaše poptávka dorazila v pořádku.',
-      react: WelcomeEmail(),
+      react: WelcomeEmail({ name, message, isUrgent }),
     });
 
     if (welcomeData.error) {
@@ -34,8 +35,8 @@ export async function POST(req: Request) {
 
     // Send the scheduled Follow Up Email
     const followUpData = await resend.emails.send({
-      from: 'onboarding@resend.dev',
-      to: 'jakub.sokol2007@gmail.com',
+      from: 'Vexx <noreply@vexx.cz>',
+      to: email,
       subject: 'Proč weby od Vexx. vydělávají víc.',
       react: FollowUpEmail(),
       scheduledAt: tomorrow.toISOString(),

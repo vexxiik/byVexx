@@ -11,7 +11,13 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-export default function WelcomeEmail() {
+interface WelcomeEmailProps {
+  name?: string;
+  message?: string;
+  isUrgent?: boolean;
+}
+
+export default function WelcomeEmail({ name, message, isUrgent }: WelcomeEmailProps = {}) {
   return (
     <Html>
       <Head />
@@ -36,6 +42,17 @@ export default function WelcomeEmail() {
           <Text style={text}>
             Zatímco čekáte, můžete si prohlédnout naše případové studie a výsledky.
           </Text>
+          
+          {(name || message) && (
+            <Section style={summarySection}>
+              <Text style={summaryTitle}>Shrnutí vaší poptávky:</Text>
+              {name && <Text style={summaryText}><strong>Jméno:</strong> {name}</Text>}
+              {message && <Text style={summaryText}><strong>Zpráva:</strong> {message}</Text>}
+              <Text style={summaryText}>
+                <strong>Projekt spěchá:</strong> {isUrgent ? 'Ano' : 'Ne'}
+              </Text>
+            </Section>
+          )}
           
           <Section style={btnContainer}>
             <Button style={button} href="https://byvexx.cz/#work">
@@ -105,4 +122,26 @@ const footer = {
   fontWeight: "600",
   lineHeight: "1.6",
   marginTop: "32px",
+};
+
+const summarySection = {
+  marginTop: "32px",
+  padding: "24px",
+  backgroundColor: "#f4f4f5",
+  borderRadius: "8px",
+  textAlign: "left" as const,
+};
+
+const summaryTitle = {
+  color: "#111111",
+  fontSize: "16px",
+  fontWeight: "600",
+  margin: "0 0 12px",
+};
+
+const summaryText = {
+  color: "#52525b",
+  fontSize: "15px",
+  lineHeight: "1.5",
+  margin: "0 0 8px",
 };
