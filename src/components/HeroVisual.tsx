@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { m, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 
@@ -22,142 +22,124 @@ function EdgeGlare() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   VALUE FLASH — Animated digit roller (adapted from 21st.dev)
+   CLEAN ANIMATED NUMBER — Minimalist Precision Ticker (Linear/Apple style)
+   No flashing colored background boxes, no circus red/green text shifts.
+   Pure, clean numeric transitions with crisp tabular alignment.
    ═══════════════════════════════════════════════════════════════ */
-const ROLL_SPRING = { type: "spring", stiffness: 460, damping: 32, mass: 0.55 } as const;
-const DROP_TRANSITION = { duration: 0.14, ease: [0.4, 0, 1, 1] } as const;
-const LIFT_SPRING = { type: "spring", stiffness: 380, damping: 26, mass: 0.7 } as const;
-const SETTLE_SPRING = { type: "spring", stiffness: 260, damping: 34, mass: 0.8 } as const;
-
-type FlashDirection = "up" | "down";
-
-function useValueFlash(value: number, hold = 900) {
-  const [state, setState] = useState({
-    direction: null as FlashDirection | null,
-    changeId: 0,
-    flashing: false,
-  });
-
-  const previous = useRef(value);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    const prior = previous.current;
-    if (prior === value) return;
-    previous.current = value;
-    const delta = value - prior;
-    if (delta === 0) return;
-
-    setState((prev) => ({
-      direction: delta > 0 ? "up" : "down",
-      changeId: prev.changeId + 1,
-      flashing: true,
-    }));
-
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => {
-      timer.current = null;
-      setState((prev) => (prev.flashing ? { ...prev, flashing: false } : prev));
-    }, hold);
-  }, [value, hold]);
-
-  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
-
-  return state;
-}
-
-function ValueFlashDisplay({ value, format, className = "" }: {
+const CleanAnimatedNumber = React.memo(function CleanAnimatedNumber({
+  value,
+  format,
+  className = "",
+}: {
   value: number;
   format: (v: number) => string;
   className?: string;
 }) {
-  const { direction, flashing, changeId } = useValueFlash(value);
+  const previous = useRef(value);
+  const [direction, setDirection] = useState<"up" | "down">("up");
+  const [changeKey, setChangeKey] = useState(0);
+
+  useEffect(() => {
+    if (previous.current !== value) {
+      setDirection(value > previous.current ? "up" : "down");
+      previous.current = value;
+      setChangeKey((k) => k + 1);
+    }
+  }, [value]);
+
   const text = format(value);
 
-  const tone = flashing
-    ? direction === "up"
-      ? "text-emerald-600"
-      : "text-red-500"
-    : "text-zinc-900";
-
-  const tint = direction === "up"
-    ? "bg-emerald-500/10"
-    : "bg-red-500/10";
-
   return (
-    <m.span
-      initial={false}
-      animate={{ scale: flashing ? 1.03 : 1 }}
-      transition={flashing ? LIFT_SPRING : SETTLE_SPRING}
-      className={`relative inline-grid grid-flow-col items-center rounded-lg px-1 py-0.5 font-bold tabular-nums transition-colors duration-200 ${tone} ${className}`}
-    >
-      {direction && (
-        <m.span
-          aria-hidden
-          initial={{ opacity: 0 }}
-          animate={{ opacity: flashing ? 1 : 0 }}
-          transition={flashing ? { duration: 0.15 } : { duration: 0.3 }}
-          className={`pointer-events-none absolute inset-0 rounded-lg ${tint}`}
-        />
-      )}
-      <span aria-hidden className="relative inline-grid overflow-hidden">
+    <span className={`relative inline-grid grid-flow-col items-center font-bold tabular-nums select-none ${className}`}>
+      <span className="relative inline-grid overflow-hidden">
         <AnimatePresence initial={false} mode="popLayout">
           <m.span
-            key={changeId}
+            key={changeKey}
             initial={{
               opacity: 0,
-              y: direction === "down" ? "-0.85em" : "0.85em",
-              filter: "blur(4px)",
+              y: direction === "down" ? "-0.4em" : "0.4em",
             }}
-            animate={{ opacity: 1, y: "0em", filter: "blur(0px)" }}
+            animate={{ opacity: 1, y: "0em" }}
             exit={{
               opacity: 0,
-              y: direction === "down" ? "0.7em" : "-0.7em",
-              filter: "blur(4px)",
-              transition: DROP_TRANSITION,
+              y: direction === "down" ? "0.4em" : "-0.4em",
+              transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
             }}
-            transition={ROLL_SPRING}
+            transition={{
+              type: "spring",
+              stiffness: 400,
+              damping: 32,
+              mass: 0.5,
+            }}
             className="col-start-1 row-start-1"
           >
             {text}
           </m.span>
         </AnimatePresence>
       </span>
-    </m.span>
+    </span>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════════════════
-   CARD 1: REVENUE TICKER (Main card — full width)
+   CARD 1: CONVERSION PERFORMANCE (Main card — full width)
+   Professional B2B metrics — no fake revenue numbers
    ═══════════════════════════════════════════════════════════════ */
-function RevenueTickerCard() {
-  const [revenue, setRevenue] = useState(2400000);
-  const [growth, setGrowth] = useState(34);
+
+interface MetricPill {
+  label: string;
+  value: number;
+  suffix: string;
+  prefix?: string;
+  trend: number;
+}
+
+const ConversionPerformanceCard = React.memo(function ConversionPerformanceCard() {
+  const [metrics, setMetrics] = useState<MetricPill[]>([
+    { label: 'Konverzní poměr', value: 4.8, suffix: '%', trend: 12 },
+    { label: 'ROAS', value: 6.2, suffix: '×', trend: 18 },
+    { label: 'Náklady na lead', value: 127, suffix: ' Kč', prefix: '', trend: -15 },
+  ]);
+
+  const [activeMetric, setActiveMetric] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setRevenue((prev) => {
-        const delta = Math.floor(Math.random() * 80000) - 25000;
-        return Math.max(1800000, Math.min(3200000, prev + delta));
-      });
-      setGrowth((prev) => {
-        const delta = Math.floor(Math.random() * 5) - 2;
-        return Math.max(12, Math.min(58, prev + delta));
-      });
-    }, 3000);
+      setMetrics((prev) =>
+        prev.map((m) => {
+          let delta: number;
+          if (m.label === 'Náklady na lead') {
+            delta = (Math.random() * 4) - 2;
+            return { ...m, value: Math.max(90, Math.min(180, Math.round(m.value + delta))), trend: Math.max(-22, Math.min(-8, m.trend + Math.floor(Math.random() * 3) - 1)) };
+          }
+          delta = (Math.random() * 0.3) - 0.1;
+          const newTrend = Math.max(8, Math.min(25, m.trend + Math.floor(Math.random() * 3) - 1));
+          return { ...m, value: Math.round(Math.max(2.5, Math.min(8.5, m.value + delta)) * 10) / 10, trend: newTrend };
+        })
+      );
+    }, 8500);
     return () => clearInterval(interval);
   }, []);
 
-  const formatRevenue = useCallback((v: number) => {
-    if (v >= 1000000) return `${(v / 1000000).toFixed(1)}M`;
-    return `${(v / 1000).toFixed(0)}K`;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveMetric((prev) => (prev + 1) % 3);
+    }, 7000);
+    return () => clearInterval(interval);
   }, []);
+
+  const current = metrics[activeMetric];
+  const trendIsNegativeGood = current.label === 'Náklady na lead';
+  const trendColor = trendIsNegativeGood
+    ? (current.trend < 0 ? 'text-emerald-700 bg-emerald-50/70 border-emerald-200/50' : 'text-rose-600 bg-rose-50/70 border-rose-200/50')
+    : (current.trend > 0 ? 'text-emerald-700 bg-emerald-50/70 border-emerald-200/50' : 'text-rose-600 bg-rose-50/70 border-rose-200/50');
 
   return (
     <m.div
       initial={{ opacity: 0, y: 30, rotate: -1 }}
       animate={{ opacity: 1, y: 0, rotate: -0.5 }}
       transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+      style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
       className="animate-float-card-1 group relative w-full bg-white rounded-3xl p-7 shadow-[0_8px_40px_rgba(0,0,0,0.04)] border border-zinc-100 hover:shadow-[0_20px_60px_rgba(37,99,235,0.1)] transition-shadow duration-500"
     >
       <EdgeGlare />
@@ -167,55 +149,77 @@ function RevenueTickerCard() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Měsíční obrat</span>
+            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Konverzní výkonnost</span>
           </div>
           <div className="flex items-baseline gap-2">
-            <ValueFlashDisplay
-              value={revenue}
-              format={formatRevenue}
-              className="text-4xl lg:text-[2.75rem] tracking-tight"
-            />
-            <span className="text-lg font-semibold text-zinc-400">CZK</span>
+            <AnimatePresence mode="wait">
+              <m.div
+                key={activeMetric}
+                initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -8, filter: "blur(4px)" }}
+                transition={{ duration: 0.35 }}
+                className="flex items-baseline gap-2"
+              >
+                <CleanAnimatedNumber
+                  value={current.value}
+                  format={(v) => current.label === 'Náklady na lead' ? `${v}` : `${v.toFixed(1)}`}
+                  className="text-4xl lg:text-[2.75rem] tracking-tight text-zinc-900"
+                />
+                <span className="text-lg font-semibold text-zinc-400">{current.suffix}</span>
+              </m.div>
+            </AnimatePresence>
           </div>
         </div>
         <div className="flex flex-col items-end gap-1">
-          <div className="flex items-center gap-1 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-full text-sm font-bold border border-emerald-100/50">
-            <ArrowUpRight className="w-4 h-4" />
-            <ValueFlashDisplay
-              value={growth}
-              format={(v) => `+${v}%`}
-              className="text-sm"
-            />
+          <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-colors duration-300 ${trendColor}`}>
+            <ArrowUpRight className={`w-3.5 h-3.5 ${trendIsNegativeGood && current.trend < 0 ? 'rotate-90' : ''}`} />
+            <span className="tabular-nums font-semibold">
+              {current.trend < 0 ? '-' : '+'}{Math.abs(current.trend)}%
+            </span>
           </div>
-          <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">vs minulý měsíc</span>
+          <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">za 90 dní</span>
         </div>
       </div>
 
-      {/* Sparkline */}
-      <LiveSparkline />
+      {/* Metric selector pills */}
+      <div className="flex gap-2 mb-4">
+        {metrics.map((m, i) => (
+          <button
+            key={m.label}
+            onClick={() => setActiveMetric(i)}
+            className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all duration-300 ${
+              activeMetric === i
+                ? 'bg-zinc-900 text-white shadow-sm'
+                : 'bg-zinc-100/80 text-zinc-500 hover:bg-zinc-200/80'
+            }`}
+          >
+            {m.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Growth trajectory sparkline */}
+      <GrowthTrajectory activeMetric={activeMetric} />
     </m.div>
   );
-}
+});
 
-/* ── Sparkline sub-component ── */
-function LiveSparkline() {
-  const [points, setPoints] = useState<number[]>([80, 70, 90, 50, 10, 60, 30, 15, 10]);
+/* ── Growth trajectory sub-component ── */
+const GrowthTrajectory = React.memo(function GrowthTrajectory({ activeMetric }: { activeMetric: number }) {
+  // Each metric has its own distinct trajectory shape
+  const trajectories = [
+    // Konverzní poměr — steady climb
+    [38, 42, 36, 45, 40, 48, 44, 52, 48, 55, 50, 58, 52, 60, 55, 62],
+    // ROAS — steeper growth
+    [55, 50, 48, 52, 45, 50, 42, 48, 38, 44, 35, 40, 30, 35, 28, 25],
+    // Náklady na lead — descending (good)
+    [20, 25, 18, 30, 22, 35, 28, 40, 32, 42, 36, 48, 38, 50, 42, 55],
+  ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPoints((prev) => {
-        const newPoints = [...prev.slice(1)];
-        const last = prev[prev.length - 1];
-        const next = Math.max(5, Math.min(95, last + (Math.random() * 30 - 15)));
-        newPoints.push(next);
-        return newPoints;
-      });
-    }, 2500);
-    return () => clearInterval(interval);
-  }, []);
-
+  const points = trajectories[activeMetric] || trajectories[0];
   const width = 400;
-  const height = 100;
+  const height = 80;
   const step = width / (points.length - 1);
 
   const pathD = points
@@ -234,61 +238,76 @@ function LiveSparkline() {
   const lastX = (points.length - 1) * step;
   const lastY = points[points.length - 1];
 
+  // Color per metric
+  const colors = [
+    { stroke: '#3B82F6', fill: '#3B82F6', dot: '#4F46E5' },
+    { stroke: '#10B981', fill: '#10B981', dot: '#059669' },
+    { stroke: '#F59E0B', fill: '#F59E0B', dot: '#D97706' },
+  ];
+  const c = colors[activeMetric] || colors[0];
+
   return (
-    <div className="relative w-full h-[90px] mt-2">
-      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.12" />
-            <stop offset="100%" stopColor="#3B82F6" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="sparkLine" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#60A5FA" />
-            <stop offset="50%" stopColor="#3B82F6" />
-            <stop offset="100%" stopColor="#818CF8" />
-          </linearGradient>
-        </defs>
-
-        <m.path
-          d={fillD}
-          fill="url(#sparkFill)"
+    <div className="relative w-full h-[70px]">
+      <AnimatePresence mode="wait">
+        <m.div
+          key={activeMetric}
           initial={{ opacity: 0 }}
-          animate={{ opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        />
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="absolute inset-0"
+        >
+          <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id={`trajFill-${activeMetric}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={c.fill} stopOpacity="0.08" />
+                <stop offset="100%" stopColor={c.fill} stopOpacity="0" />
+              </linearGradient>
+            </defs>
 
-        <m.path
-          d={pathD}
-          fill="none"
-          stroke="url(#sparkLine)"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
-        />
+            <m.path
+              d={fillD}
+              fill={`url(#trajFill-${activeMetric})`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.6 }}
+              transition={{ duration: 0.8 }}
+            />
 
-        {/* Glow dot at end */}
-        <m.circle
-          cx={lastX}
-          cy={lastY}
-          r="5"
-          fill="#fff"
-          stroke="#4F46E5"
-          strokeWidth="2.5"
-          animate={{ scale: [1, 1.4, 1], opacity: [0.8, 1, 0.8] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="drop-shadow-[0_0_10px_rgba(79,70,229,0.6)]"
-        />
-      </svg>
+            <m.path
+              d={pathD}
+              fill="none"
+              stroke={c.stroke}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeOpacity={0.5}
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+            />
+
+            {/* End dot */}
+            <m.circle
+              cx={lastX}
+              cy={lastY}
+              r="4"
+              fill="#fff"
+              stroke={c.dot}
+              strokeWidth="2"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 1 }}
+            />
+          </svg>
+        </m.div>
+      </AnimatePresence>
     </div>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════════════════
    CARD 2: AKVIZIČNÍ FUNNEL (Self-animating pipeline)
    ═══════════════════════════════════════════════════════════════ */
-function FunnelCard() {
+const FunnelCard = React.memo(function FunnelCard() {
   const [metrics, setMetrics] = useState([
     { label: 'Návštěvnost', val: 12400, progress: 100 },
     { label: 'Kliknutí na poptávku', val: 2840, progress: 45, highlight: '+22%' },
@@ -299,8 +318,8 @@ function FunnelCard() {
     const interval = setInterval(() => {
       setMetrics((prev) =>
         prev.map((item) => {
-          const delta = Math.floor(Math.random() * Math.max(1, item.val * 0.03));
-          const direction = Math.random() > 0.3 ? 1 : -1;
+          const delta = Math.floor(Math.random() * Math.max(1, item.val * 0.02));
+          const direction = Math.random() > 0.4 ? 1 : -1;
           const newVal = Math.max(100, item.val + delta * direction);
 
           const highlightNum = item.highlight ? parseInt(item.highlight.replace(/[^0-9]/g, '')) : 0;
@@ -316,7 +335,7 @@ function FunnelCard() {
           };
         })
       );
-    }, 5000);
+    }, 8500);
     return () => clearInterval(interval);
   }, []);
 
@@ -325,6 +344,7 @@ function FunnelCard() {
       initial={{ opacity: 0, y: 30, rotate: 0.5 }}
       animate={{ opacity: 1, y: 0, rotate: 0.3 }}
       transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+      style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
       className="animate-float-card-2 group relative w-full bg-white rounded-3xl p-6 shadow-[0_8px_40px_rgba(0,0,0,0.04)] border border-zinc-100 hover:shadow-[0_20px_60px_rgba(37,99,235,0.1)] transition-shadow duration-500"
     >
       <EdgeGlare />
@@ -350,14 +370,14 @@ function FunnelCard() {
               <span>{item.label}</span>
               <div className="flex items-center gap-2">
                 {item.highlight && (
-                  <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50">
+                  <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50/70 px-2 py-0.5 rounded-full border border-emerald-200/50">
                     {item.highlight}
                   </span>
                 )}
-                <ValueFlashDisplay
+                <CleanAnimatedNumber
                   value={item.val}
                   format={(v) => v.toLocaleString('cs-CZ')}
-                  className="text-sm !font-semibold"
+                  className="text-sm font-semibold text-zinc-800"
                 />
               </div>
             </div>
@@ -380,7 +400,7 @@ function FunnelCard() {
       </div>
     </m.div>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════════════════
    CARD 3: ACTIVITY FEED (Auto-rotating live entries)
@@ -398,7 +418,7 @@ const FEED_ENTRIES = [
   { text: 'Deal pipeline: +120K', color: 'bg-emerald-500', time: 'Před 30m' },
 ];
 
-function ActivityFeedCard() {
+const ActivityFeedCard = React.memo(function ActivityFeedCard() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const visibleCount = 4;
 
@@ -419,6 +439,7 @@ function ActivityFeedCard() {
       initial={{ opacity: 0, y: 30, rotate: 1 }}
       animate={{ opacity: 1, y: 0, rotate: 0.5 }}
       transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+      style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
       className="animate-float-card-3 group relative w-full bg-white rounded-3xl p-5 shadow-[0_8px_40px_rgba(0,0,0,0.04)] border border-zinc-100 hover:shadow-[0_20px_60px_rgba(37,99,235,0.1)] transition-shadow duration-500 overflow-hidden"
     >
       <EdgeGlare />
@@ -462,7 +483,7 @@ function ActivityFeedCard() {
       </div>
     </m.div>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════════════════
    CARD 4: PERFORMANCE BAR CHART (Interactive mini chart)
@@ -476,7 +497,7 @@ const PERF_DATA = [
   { label: 'SI', value: 85 },
 ];
 
-function PerformanceChartCard() {
+const PerformanceChartCard = React.memo(function PerformanceChartCard() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [score, setScore] = useState(98);
   const maxValue = 100;
@@ -485,9 +506,9 @@ function PerformanceChartCard() {
     const interval = setInterval(() => {
       setScore((prev) => {
         const delta = Math.random() > 0.5 ? 1 : -1;
-        return Math.max(94, Math.min(100, prev + delta));
+        return Math.max(96, Math.min(100, prev + delta));
       });
-    }, 4000);
+    }, 9000);
     return () => clearInterval(interval);
   }, []);
 
@@ -496,6 +517,7 @@ function PerformanceChartCard() {
       initial={{ opacity: 0, y: 30, rotate: -1.5 }}
       animate={{ opacity: 1, y: 0, rotate: -0.8 }}
       transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
       className="animate-float-card-4 group relative bg-white rounded-3xl p-5 shadow-[0_8px_40px_rgba(0,0,0,0.04)] border border-zinc-100 hover:shadow-[0_20px_60px_rgba(37,99,235,0.1)] transition-shadow duration-500"
     >
       <EdgeGlare />
@@ -503,10 +525,10 @@ function PerformanceChartCard() {
       <div className="flex items-center justify-between mb-4">
         <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Web Vitals</span>
         <div className="flex items-baseline gap-1">
-          <ValueFlashDisplay
+          <CleanAnimatedNumber
             value={score}
             format={(v) => `${v}`}
-            className="text-2xl tracking-tight"
+            className="text-2xl tracking-tight text-zinc-900 font-bold"
           />
           <span className="text-xs text-zinc-400 font-semibold">/100</span>
         </div>
@@ -572,21 +594,21 @@ function PerformanceChartCard() {
       </div>
     </m.div>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════════════════
    CARD 5: STATUS BEACON (Floating live pill)
    ═══════════════════════════════════════════════════════════════ */
-function StatusBeacon() {
+const StatusBeacon = React.memo(function StatusBeacon() {
   const [visitors, setVisitors] = useState(247);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setVisitors((prev) => {
-        const delta = Math.floor(Math.random() * 15) - 5;
-        return Math.max(180, Math.min(420, prev + delta));
+        const delta = Math.floor(Math.random() * 9) - 4;
+        return Math.max(210, Math.min(380, prev + delta));
       });
-    }, 2000);
+    }, 7500);
     return () => clearInterval(interval);
   }, []);
 
@@ -595,6 +617,7 @@ function StatusBeacon() {
       initial={{ opacity: 0, y: 20, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.7, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
       className="animate-float-card-5"
     >
       <div className="group relative inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3.5 shadow-[0_8px_40px_rgba(0,0,0,0.04)] border border-zinc-100 hover:shadow-[0_20px_60px_rgba(37,99,235,0.1)] transition-shadow duration-500">
@@ -611,17 +634,17 @@ function StatusBeacon() {
         <div className="w-px h-4 bg-zinc-200" />
 
         <div className="flex items-baseline gap-1.5">
-          <ValueFlashDisplay
+          <CleanAnimatedNumber
             value={visitors}
             format={(v) => v.toString()}
-            className="text-base"
+            className="text-base text-zinc-900 font-bold"
           />
           <span className="text-[10px] text-zinc-400 font-medium">návštěvníků</span>
         </div>
       </div>
     </m.div>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════════════════
    MAIN COMPOSITION — "Command Center" Layout
@@ -637,8 +660,8 @@ export default function HeroVisual() {
       {/* ── Card Composition ── */}
       <div className="relative z-10 w-full max-w-[540px] flex flex-col gap-5">
         
-        {/* Row 1: Revenue Ticker (full width) */}
-        <RevenueTickerCard />
+        {/* Row 1: Conversion Performance (full width) */}
+        <ConversionPerformanceCard />
         
         {/* Row 2: Funnel + Activity Feed */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

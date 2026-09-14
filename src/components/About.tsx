@@ -13,24 +13,28 @@ export default function About() {
     const el = containerRef.current;
     if (!el) return;
 
-    const items = el.querySelectorAll('.animate-item');
-    items.forEach((item, i) => {
-      gsap.fromTo(
-        item,
-        { opacity: 0, x: i % 2 === 0 ? -100 : 100, y: 30 },
-        {
-          opacity: 1,
-          x: 0,
-          y: 0,
-          duration: 1,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: item,
-            start: 'top 85%',
-          },
-        }
-      );
+    const ctx = gsap.context(() => {
+      const items = el.querySelectorAll('.animate-item');
+      items.forEach((item, i) => {
+        gsap.fromTo(
+          item,
+          { opacity: 0, x: i % 2 === 0 ? -100 : 100, y: 30 },
+          {
+            opacity: 1,
+            x: 0,
+            y: 0,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: item,
+              start: 'top 85%',
+            },
+          }
+        );
+      });
     });
+
+    return () => ctx.revert();
   }, []);
 
   return (

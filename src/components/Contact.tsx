@@ -15,19 +15,23 @@ export default function Contact() {
     const el = containerRef.current;
     if (!el) return;
 
-    const leftPart = el.querySelector('.lg\\:grid-cols-2 > div:first-child');
-    const rightPart = el.querySelector('.lg\\:grid-cols-2 > div:last-child');
+    const ctx = gsap.context(() => {
+      const leftPart = el.querySelector('.lg\\:grid-cols-2 > div:first-child');
+      const rightPart = el.querySelector('.lg\\:grid-cols-2 > div:last-child');
 
-    gsap.fromTo(
-      leftPart,
-      { opacity: 0, x: -150 },
-      { opacity: 1, x: 0, duration: 1, ease: 'back.out(1.2)', scrollTrigger: { trigger: el, start: 'top 80%' } }
-    );
-    gsap.fromTo(
-      rightPart,
-      { opacity: 0, x: 150 },
-      { opacity: 1, x: 0, duration: 1, ease: 'back.out(1.2)', scrollTrigger: { trigger: el, start: 'top 80%' } }
-    );
+      gsap.fromTo(
+        leftPart,
+        { opacity: 0, x: -150 },
+        { opacity: 1, x: 0, duration: 1, ease: 'back.out(1.2)', scrollTrigger: { trigger: el, start: 'top 80%' } }
+      );
+      gsap.fromTo(
+        rightPart,
+        { opacity: 0, x: 150 },
+        { opacity: 1, x: 0, duration: 1, ease: 'back.out(1.2)', scrollTrigger: { trigger: el, start: 'top 80%' } }
+      );
+    });
+
+    return () => ctx.revert();
   }, []);
 
   return (

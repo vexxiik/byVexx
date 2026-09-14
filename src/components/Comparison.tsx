@@ -15,7 +15,7 @@ import {
    Běžná → frozen terminal with blinking error
    ═══════════════════════════════════════════════════════════════ */
 
-function TerminalMicroUI({ isVexx }: { isVexx: boolean }) {
+const TerminalMicroUI = React.memo(function TerminalMicroUI({ isVexx }: { isVexx: boolean }) {
   const [typedChars, setTypedChars] = useState(0);
   const [progress, setProgress] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -191,7 +191,7 @@ function TerminalMicroUI({ isVexx }: { isVexx: boolean }) {
       )}
     </div>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════════════════
    MICRO-UI: COPYWRITING  (Psychologický Copywriting)
@@ -199,7 +199,7 @@ function TerminalMicroUI({ isVexx }: { isVexx: boolean }) {
    Běžná → bland grey text block, no emphasis
    ═══════════════════════════════════════════════════════════════ */
 
-function CopywritingMicroUI({ isVexx }: { isVexx: boolean }) {
+const CopywritingMicroUI = React.memo(function CopywritingMicroUI({ isVexx }: { isVexx: boolean }) {
   const [activeWord, setActiveWord] = useState(0);
   const keywords = ["konverze", "růst", "důvěra"];
 
@@ -278,7 +278,7 @@ function CopywritingMicroUI({ isVexx }: { isVexx: boolean }) {
       </div>
     </div>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════════════════
    MICRO-UI: TIMELINE  (Extrémní spolehlivost)
@@ -286,7 +286,7 @@ function CopywritingMicroUI({ isVexx }: { isVexx: boolean }) {
    Běžná → Crossed out / delayed steps ✗
    ═══════════════════════════════════════════════════════════════ */
 
-function TimelineMicroUI({ isVexx }: { isVexx: boolean }) {
+const TimelineMicroUI = React.memo(function TimelineMicroUI({ isVexx }: { isVexx: boolean }) {
   const steps = ["Návrh", "Kód", "Test", "Launch"];
   const [checkedSteps, setCheckedSteps] = useState(0);
 
@@ -413,7 +413,7 @@ function TimelineMicroUI({ isVexx }: { isVexx: boolean }) {
       )}
     </div>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════════════════
    MICRO-UI: CHART  (Konverzní partnerství)
@@ -421,7 +421,7 @@ function TimelineMicroUI({ isVexx }: { isVexx: boolean }) {
    Běžná → Declining red bars
    ═══════════════════════════════════════════════════════════════ */
 
-function ChartMicroUI({ isVexx }: { isVexx: boolean }) {
+const ChartMicroUI = React.memo(function ChartMicroUI({ isVexx }: { isVexx: boolean }) {
   const vexxData = [30, 45, 55, 70, 85, 95];
   const badData = [70, 55, 40, 35, 25, 18];
   const data = isVexx ? vexxData : badData;
@@ -503,13 +503,13 @@ function ChartMicroUI({ isVexx }: { isVexx: boolean }) {
       </div>
     </div>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════════════════
    TILT CARD  — 3D mouse-track on hover (Vexx only)
    ═══════════════════════════════════════════════════════════════ */
 
-function TiltCard({
+const TiltCard = React.memo(function TiltCard({
   children,
   isVexx,
   index,
@@ -557,6 +557,8 @@ function TiltCard({
         rotateY: isVexx ? rotateYSpring : 0,
         transformStyle: "preserve-3d",
         perspective: 800,
+        willChange: "transform, opacity",
+        transform: "translateZ(0)",
       }}
       initial={{ opacity: 0, y: 30, scale: 0.97, filter: "blur(6px)" }}
       animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
@@ -591,7 +593,7 @@ function TiltCard({
       <div className="relative z-10">{children}</div>
     </m.div>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════════════════
    DATA

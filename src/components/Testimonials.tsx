@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { m, useInView, useMotionValue, useTransform, animate } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -74,7 +74,7 @@ const AnimatedNumber = ({ value, isVisible }: { value: number; isVisible: boolea
   return <m.span>{rounded}</m.span>;
 };
 
-const LighthouseBar = ({ 
+const LighthouseBar = React.memo(({ 
   value, 
   label, 
   delay = 0, 
@@ -99,6 +99,7 @@ const LighthouseBar = ({
           initial={{ width: 0 }}
           animate={isVisible ? { width: `${value}%` } : { width: 0 }}
           transition={{ duration: 1.5, delay: delay + 0.2, ease: [0.22, 1, 0.36, 1] }}
+          style={{ willChange: "width" }}
         />
       </div>
       <div className={`w-10 text-right text-sm font-black tabular-nums ${textColor}`}>
@@ -106,9 +107,9 @@ const LighthouseBar = ({
       </div>
     </div>
   );
-};
+});
 
-const LighthouseDashboard = ({ audit, isVisible }: { 
+const LighthouseDashboard = React.memo(({ audit, isVisible }: { 
   audit: { performance: number; accessibility: number; bestPractices: number; seo: number };
   isVisible: boolean;
 }) => {
@@ -153,7 +154,7 @@ const LighthouseDashboard = ({ audit, isVisible }: {
       </div>
     </div>
   );
-};
+});
 
 /* ─── Orbit Rotation Tech Stack ─── */
 
@@ -164,7 +165,7 @@ interface StackItem {
   symbol?: string;
 }
 
-const OrbitTechStack = ({ stack }: { stack: StackItem[] }) => {
+const OrbitTechStack = React.memo(({ stack }: { stack: StackItem[] }) => {
   const innerOrbit = stack.slice(0, 4);
   const outerOrbit = stack.slice(4);
   
@@ -180,7 +181,7 @@ const OrbitTechStack = ({ stack }: { stack: StackItem[] }) => {
       
       <div className="relative flex items-center justify-center h-[280px] overflow-hidden">
         {/* Center Hub */}
-        <div className="absolute z-20 flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-black/5">
+        <div className="absolute z-20 flex flex-col items-center justify-center w-16 h-16 rounded-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-black/5" style={{ willChange: "transform", transform: "translateZ(0)" }}>
           {centerItem.iconUrl ? (
             <img src={centerItem.iconUrl} alt={centerItem.name} className="w-7 h-7" />
           ) : centerItem.svg ? (
@@ -197,6 +198,7 @@ const OrbitTechStack = ({ stack }: { stack: StackItem[] }) => {
             width: '10rem',
             height: '10rem',
             animation: 'orbit-spin 18s linear infinite',
+            willChange: 'transform',
           }}
         >
           {innerOrbit.map((tech, i) => {
@@ -211,6 +213,7 @@ const OrbitTechStack = ({ stack }: { stack: StackItem[] }) => {
                   left: `${x}%`,
                   top: `${y}%`,
                   animation: 'orbit-counter-spin 18s linear infinite',
+                  willChange: 'transform',
                 }}
               >
                 <div className="w-10 h-10 rounded-full bg-white shadow-[0_2px_10px_rgba(0,0,0,0.06)] border border-black/5 flex items-center justify-center">
@@ -234,6 +237,7 @@ const OrbitTechStack = ({ stack }: { stack: StackItem[] }) => {
             width: '18rem',
             height: '18rem',
             animation: 'orbit-spin 30s linear infinite reverse',
+            willChange: 'transform',
           }}
         >
           {outerOrbit.map((tech, i) => {
@@ -248,6 +252,7 @@ const OrbitTechStack = ({ stack }: { stack: StackItem[] }) => {
                   left: `${x}%`,
                   top: `${y}%`,
                   animation: 'orbit-counter-spin 30s linear infinite reverse',
+                  willChange: 'transform',
                 }}
               >
                 <div className="w-9 h-9 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-black/5 flex items-center justify-center">
@@ -270,7 +275,7 @@ const OrbitTechStack = ({ stack }: { stack: StackItem[] }) => {
       </div>
     </div>
   );
-};
+});
 
 /* ─── Main Component ─── */
 
@@ -287,30 +292,36 @@ export default function Testimonials() {
   useEffect(() => {
     const el = containerRef.current;
     if (el) {
-      gsap.fromTo(
-        el,
-        { opacity: 0, y: 50 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 80%',
+      const ctx = gsap.context(() => {
+        gsap.fromTo(
+          el,
+          { opacity: 0, y: 50 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 80%',
+            }
           }
-        }
-      );
+        );
+      });
+      return () => ctx.revert();
     }
   }, []);
 
   useEffect(() => {
     if (leftColRef.current) {
-      gsap.fromTo(
-        leftColRef.current,
-        { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
-      );
+      const ctx = gsap.context(() => {
+        gsap.fromTo(
+          leftColRef.current,
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
+        );
+      });
+      return () => ctx.revert();
     }
   }, [activeId]);
 

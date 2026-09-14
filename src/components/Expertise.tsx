@@ -50,24 +50,28 @@ export default function Expertise() {
     const el = containerRef.current;
     if (!el) return;
 
-    cardsRef.current.forEach((card, i) => {
-      if (!card) return;
-      gsap.fromTo(
-        card,
-        { opacity: 0, x: i % 2 === 0 ? -150 : 150, y: 50 },
-        {
-          opacity: 1,
-          x: 0,
-          y: 0,
-          duration: 1,
-          ease: 'back.out(1.2)',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top 85%',
-          },
-        }
-      );
+    const ctx = gsap.context(() => {
+      cardsRef.current.forEach((card, i) => {
+        if (!card) return;
+        gsap.fromTo(
+          card,
+          { opacity: 0, x: i % 2 === 0 ? -150 : 150, y: 50 },
+          {
+            opacity: 1,
+            x: 0,
+            y: 0,
+            duration: 1,
+            ease: 'back.out(1.2)',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 85%',
+            },
+          }
+        );
+      });
     });
+
+    return () => ctx.revert();
   }, []);
 
   return (

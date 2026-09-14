@@ -19,37 +19,41 @@ export default function ImpactBento() {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
-    if (textRef.current) {
-      const originalText = '"Zapomeňte na běžné kodéry. Vexx chápe byznys. Web se zaplatil v prvním měsíci provozu."';
-      
-      gsap.to(textRef.current, {
-        text: originalText,
-        duration: 3,
-        ease: "none",
-        scrollTrigger: {
-          trigger: textRef.current,
-          start: "top 85%",
-          once: true
-        }
-      });
-    }
-
-    if (codeIconRef.current) {
-      gsap.fromTo(codeIconRef.current, 
-        { rotate: -20, scale: 0.8 },
-        { 
-          rotate: 0, 
-          scale: 1, 
-          duration: 1, 
-          ease: "elastic.out(1, 0.3)",
+    const ctx = gsap.context(() => {
+      if (textRef.current) {
+        const originalText = '"Zapomeňte na běžné kodéry. Vexx chápe byznys. Web se zaplatil v prvním měsíci provozu."';
+        
+        gsap.to(textRef.current, {
+          text: originalText,
+          duration: 3,
+          ease: "none",
           scrollTrigger: {
-            trigger: codeIconRef.current,
+            trigger: textRef.current,
             start: "top 85%",
             once: true
           }
-        }
-      );
-    }
+        });
+      }
+
+      if (codeIconRef.current) {
+        gsap.fromTo(codeIconRef.current, 
+          { rotate: -20, scale: 0.8 },
+          { 
+            rotate: 0, 
+            scale: 1, 
+            duration: 1, 
+            ease: "elastic.out(1, 0.3)",
+            scrollTrigger: {
+              trigger: codeIconRef.current,
+              start: "top 85%",
+              once: true
+            }
+          }
+        );
+      }
+    });
+
+    return () => ctx.revert();
   }, []);
 
   useEffect(() => {
@@ -62,18 +66,18 @@ export default function ImpactBento() {
     }
   }, [isInView, count]);
 
-  const container: Variants = {
+  const container: Variants = React.useMemo(() => ({
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: { staggerChildren: 0.1 },
     },
-  };
+  }), []);
 
-  const item: Variants = {
+  const item: Variants = React.useMemo(() => ({
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } },
-  };
+  }), []);
 
   return (
     <section className="py-24 lg:py-32 bg-[#FAFAFA] text-[#111] overflow-hidden">
@@ -94,6 +98,7 @@ export default function ImpactBento() {
           variants={container}
           initial="hidden"
           animate={isInView ? "show" : "hidden"}
+          style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
           className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[240px]"
         >
           

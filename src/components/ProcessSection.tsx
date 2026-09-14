@@ -62,7 +62,7 @@ const steps = [
 /* ─────────────────────────────────────────────────────────────
    VISUAL 01 — DISCOVERY: Living mind-map / constellation
 ───────────────────────────────────────────────────────────── */
-function DiscoveryVisual() {
+const DiscoveryVisual = React.memo(function DiscoveryVisual() {
   const nodes = [
     { label: "Cíle", x: 50, y: 28, size: 52, icon: Eye },
     { label: "Trh", x: 22, y: 50, size: 44, icon: Globe },
@@ -157,12 +157,12 @@ function DiscoveryVisual() {
       })}
     </div>
   );
-}
+});
 
 /* ─────────────────────────────────────────────────────────────
    VISUAL 02 — DESIGN: Interactive layer-stack with 3D depth
 ───────────────────────────────────────────────────────────── */
-function DesignVisual() {
+const DesignVisual = React.memo(function DesignVisual() {
   const layers = [
     { label: "Navigation", color: "#F3E8FF", border: "#C4B5FD", y: 0 },
     { label: "Hero Section", color: "#EDE9FE", border: "#A78BFA", y: 0 },
@@ -234,12 +234,12 @@ function DesignVisual() {
       </m.div>
     </div>
   );
-}
+});
 
 /* ─────────────────────────────────────────────────────────────
    VISUAL 03 — DEV: Live terminal with real-time build output
 ───────────────────────────────────────────────────────────── */
-function DevVisual() {
+const DevVisual = React.memo(function DevVisual() {
   const [visibleLines, setVisibleLines] = useState(0);
 
   const terminalLines = [
@@ -323,12 +323,12 @@ function DevVisual() {
       </m.div>
     </div>
   );
-}
+});
 
 /* ─────────────────────────────────────────────────────────────
    VISUAL 04 — LAUNCH: Real-time analytics dashboard
 ───────────────────────────────────────────────────────────── */
-function LaunchVisual() {
+const LaunchVisual = React.memo(function LaunchVisual() {
   return (
     <div className="relative w-full h-full bg-gradient-to-br from-[#FAFFFE] to-[#ECFDF5] flex items-center justify-center overflow-hidden p-6">
       {/* Ambient */}
@@ -446,7 +446,7 @@ function LaunchVisual() {
       </div>
     </div>
   );
-}
+});
 
 /* ─────────────────────────────────────────────────────────────
    MAIN COMPONENT
@@ -543,7 +543,7 @@ export default function ProcessSection() {
 }
 
 /* ── Progress pills ── */
-function ProgressPills({ activeIndex }: { activeIndex: MotionValue<number> }) {
+const ProgressPills = React.memo(function ProgressPills({ activeIndex }: { activeIndex: MotionValue<number> }) {
   const [active, setActive] = useState(0);
 
   useEffect(() => {
@@ -580,10 +580,10 @@ function ProgressPills({ activeIndex }: { activeIndex: MotionValue<number> }) {
       ))}
     </div>
   );
-}
+});
 
 /* ── Single slide panel ── */
-function SlidePanel({
+const SlidePanel = React.memo(function SlidePanel({
   step,
   index,
   visual,
@@ -664,4 +664,4 @@ function SlidePanel({
       </div>
     </div>
   );
-}
+});
