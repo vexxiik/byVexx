@@ -14,7 +14,7 @@ const plans = [
       "Psychologický copywriting",
       "Pokročilé SEO a integrace rezervačních systémů",
     ],
-    price: "Zaváděcí cena od 7 000 Kč",
+    price: "Zaváděcí cena od 7 500 Kč",
     highlight: false,
   },
   {

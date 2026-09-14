@@ -21,7 +21,7 @@ export default function ImpactBento() {
     gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
     if (textRef.current) {
-      const originalText = '"Zapomeňte na běžné kodéry. Vexx chápe byznys. Web se zaplatil v prvním měsíci provozu."';
+      const originalText = '"Zapomeňte na běžné agentury. Vexx chápe byznys. Web se zaplatil v prvním měsíci provozu."';
 
       gsap.to(textRef.current, {
         text: originalText,
