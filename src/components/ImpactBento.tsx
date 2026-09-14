@@ -201,9 +201,9 @@ export default function ImpactBento() {
             </div>
 
             <div className="relative z-10 shrink-0">
-              <button className="px-8 py-4 rounded-full bg-white text-blue-600 font-bold tracking-wide hover:scale-105 transition-transform duration-300 shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_15px_30px_rgba(255,255,255,0.2)]">
+              <a href="#contact" className="inline-block px-8 py-4 rounded-full bg-white text-blue-600 font-bold tracking-wide hover:scale-105 transition-transform duration-300 shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_15px_30px_rgba(255,255,255,0.2)]">
                 Chci vidět rozdíl
-              </button>
+              </a>
             </div>
           </m.div>
 

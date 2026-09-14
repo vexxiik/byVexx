@@ -10,6 +10,9 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Contact() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isUrgent, setIsUrgent] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   useEffect(() => {
     const el = containerRef.current;
@@ -34,6 +37,42 @@ export default function Contact() {
     return () => ctx.revert();
   }, []);
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (typeof window !== 'undefined' && (window as any).dataLayer) {
+      (window as any).dataLayer.push({ event: 'form_submit_lead' });
+    }
+    
+    setIsSubmitting(true);
+    setStatus('idle');
+    
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          isUrgent,
+        }),
+      });
+      
+      if (res.ok) {
+        setStatus('success');
+        setFormData({ name: '', email: '', message: '' });
+        setIsUrgent(false);
+      } else {
+        setStatus('error');
+      }
+    } catch (error) {
+      setStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <footer id="contact" className="pt-24 pb-8 px-6 max-w-7xl mx-auto" ref={containerRef}>
       <div className="bg-white border border-black/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] p-8 md:p-16 lg:p-24 mb-8">
@@ -48,27 +87,31 @@ export default function Contact() {
           </div>
 
           <div>
-            <form className="space-y-6" onSubmit={(e) => {
-              e.preventDefault();
-              if (typeof window !== 'undefined' && (window as any).dataLayer) {
-                (window as any).dataLayer.push({ event: 'form_submit_lead' });
-              }
-            }}>
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <input
                   type="text"
                   placeholder="Jméno"
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  required
                   className="w-full bg-transparent border-b border-black/10 py-4 text-[#171717] placeholder:text-[#a1a1aa] focus:outline-none focus:border-black transition-colors"
                 />
                 <input
                   type="email"
                   placeholder="Email"
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  required
                   className="w-full bg-transparent border-b border-black/10 py-4 text-[#171717] placeholder:text-[#a1a1aa] focus:outline-none focus:border-black transition-colors"
                 />
               </div>
               <textarea
                 placeholder="Projekt"
                 rows={4}
+                value={formData.message}
+                onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                required
                 className="w-full bg-transparent border-b border-black/10 py-4 text-[#171717] placeholder:text-[#a1a1aa] focus:outline-none focus:border-black transition-colors resize-none"
               />
 
@@ -86,9 +129,27 @@ export default function Contact() {
                 </button>
               </div>
 
-              <button className="w-full py-4 mt-4 bg-[#171717] text-white font-bold rounded-xl hover:bg-black transition-colors flex justify-center items-center gap-2 shadow-md">
-                Odeslat zprávu
+              <button 
+                type="submit"
+                disabled={isSubmitting}
+                className="group w-full py-4 mt-4 bg-[#171717] hover:bg-blue-600 text-white font-bold rounded-xl transition-all duration-500 flex justify-center items-center gap-2 shadow-[0_4px_14px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.23)] disabled:opacity-70 disabled:hover:bg-[#171717] disabled:hover:shadow-[0_4px_14px_rgba(0,0,0,0.1)]"
+              >
+                <span>{isSubmitting ? 'Odesílám...' : 'Odeslat zprávu'}</span>
+                {!isSubmitting && (
+                  <svg className="w-5 h-5 transition-transform duration-500 ease-out group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"></path></svg>
+                )}
               </button>
+
+              {status === 'success' && (
+                <div className="text-emerald-600 text-sm font-medium mt-4 text-center">
+                  Zpráva byla úspěšně odeslána.
+                </div>
+              )}
+              {status === 'error' && (
+                <div className="text-red-500 text-sm font-medium mt-4 text-center">
+                  Něco se pokazilo. Zkuste to prosím znovu.
+                </div>
+              )}
             </form>
           </div>
         </div>

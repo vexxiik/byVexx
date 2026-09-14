@@ -4,7 +4,7 @@ import Hero from '@/components/Hero';
 import Expertise from '@/components/Expertise';
 // dynamic imports for heavy sections below the fold
 const ProcessSection = dynamic(() => import('@/components/ProcessSection'), { ssr: true });
-const Comparison = dynamic(() => import('@/components/Comparison'), { ssr: true });
+const Pricing = dynamic(() => import('@/components/Pricing'), { ssr: true });
 const ImpactBento = dynamic(() => import('@/components/ImpactBento'), { ssr: true });
 const Results = dynamic(() => import('@/components/Results'), { ssr: true });
 const Testimonials = dynamic(() => import('@/components/Testimonials'), { ssr: true });
@@ -20,7 +20,7 @@ export default function Home() {
       <Hero />
       <Expertise />
       <ProcessSection />
-      <Comparison />
+      <Pricing />
       <ImpactBento />
       <Results />
       <Testimonials />
