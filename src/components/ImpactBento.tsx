@@ -10,7 +10,6 @@ import { TextPlugin } from "gsap/TextPlugin";
 
 export default function ImpactBento() {
   const ref = useRef(null);
-  const textRef = useRef<HTMLParagraphElement>(null);
   const codeIconRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -18,22 +17,7 @@ export default function ImpactBento() {
   const rounded = useTransform(count, Math.round);
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger, TextPlugin);
-
-    if (textRef.current) {
-      const originalText = '"Zapomeňte na běžné agentury. Vexx chápe byznys. Web se zaplatil v prvním měsíci provozu."';
-
-      gsap.to(textRef.current, {
-        text: originalText,
-        duration: 3,
-        ease: "none",
-        scrollTrigger: {
-          trigger: textRef.current,
-          start: "top 85%",
-          once: true
-        }
-      });
-    }
+    gsap.registerPlugin(ScrollTrigger);
 
     if (codeIconRef.current) {
       gsap.fromTo(codeIconRef.current,
@@ -146,7 +130,7 @@ export default function ImpactBento() {
             </div>
 
             <div className="relative z-10 flex-1 flex items-center min-h-[100px]">
-              <p ref={textRef} className="text-xl font-medium leading-tight"></p>
+              <p className="text-xl font-medium leading-tight">"Zapomeňte na běžné agentury. Vexx chápe byznys. Web se zaplatil v prvním měsíci provozu."</p>
             </div>
 
             <div className="relative z-10 flex items-center gap-3 mt-6">

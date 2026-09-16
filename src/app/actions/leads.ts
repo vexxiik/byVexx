@@ -234,3 +234,30 @@ export async function trackProposalViewAction(leadId: string) {
     return { error: "Tracking failed" };
   }
 }
+
+/**
+ * Zaznamenání prokliku na hlavní web z návrhu spolupráce
+ */
+export async function trackReferralClickAction(leadId: string) {
+  try {
+    const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+    if (!lead) return { error: "Lead not found" };
+
+    const shouldUpdateStatus = ["NEW", "CALLED", "NO_ANSWER"].includes(lead.status);
+
+    await prisma.lead.update({
+      where: { id: leadId },
+      data: {
+        referralClickedAt: new Date(),
+        ...(shouldUpdateStatus ? { status: "INTERESTED" } : {})
+      }
+    });
+
+    revalidatePath("/admin");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Chyba při trackování prokliku:", error);
+    return { error: "Tracking failed" };
+  }
+}

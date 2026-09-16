@@ -68,6 +68,7 @@ model Lead {
   ceoName         String?
   address         String?
   proposalViewedAt DateTime?
+  referralClickedAt DateTime?
   isArchived      Boolean  @default(false)
   lastContactedAt DateTime?
   createdAt       DateTime @default(now())

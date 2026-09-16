@@ -8,7 +8,7 @@ import { m, AnimatePresence } from "framer-motion";
 import { Drawer } from "vaul";
 import { deleteLeadsAction, bulkUpdateStatusAction, updateLeadStatusAction, updateLeadNotesAction, addLeadAction, updateSmsTemplateAction } from "@/app/actions/leads";
 import KanbanBoard from "./KanbanBoard";
-import { LayoutGrid, List, Plus, Settings, Phone as PhoneIcon, MessageCircle, Link2, Eye } from "lucide-react";
+import { LayoutGrid, List, Plus, Settings, Phone as PhoneIcon, MessageCircle, Link2, Eye, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
@@ -484,6 +484,12 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
                     <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-2 rounded-lg">
                       <Eye className="size-4" />
                       Nabídka zobrazena: {new Date(selectedLead.proposalViewedAt).toLocaleString("cs-CZ")}
+                    </div>
+                  )}
+                  {selectedLead?.referralClickedAt && (
+                    <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded-lg mt-2">
+                      <ExternalLink className="size-4" />
+                      Proklik na web: {new Date(selectedLead.referralClickedAt).toLocaleString("cs-CZ")}
                     </div>
                   )}
                 </div>
