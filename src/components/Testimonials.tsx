@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
-import { m, useInView, useMotionValue, useTransform, animate } from 'framer-motion';
+import { m, useMotionValue, useTransform, animate } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -283,10 +283,9 @@ const OrbitTechStack = React.memo(({ stack }: { stack: StackItem[] }) => {
 export default function Testimonials() {
   const containerRef = useRef<HTMLDivElement>(null);
   const leftColRef = useRef<HTMLDivElement>(null);
-  const auditRef = useRef<HTMLDivElement>(null);
   const [activeId, setActiveId] = useState(projects[0].id);
   
-  const auditInView = useInView(auditRef, { once: true, margin: "-80px" });
+  const [auditInView, setAuditInView] = useState(false);
 
   const activeProject = projects.find(p => p.id === activeId) || projects[0];
 
@@ -395,9 +394,12 @@ export default function Testimonials() {
             </div>
 
             {/* Lighthouse Dashboard Micro-UI */}
-            <div ref={auditRef}>
+            <m.div 
+              onViewportEnter={() => setAuditInView(true)}
+              viewport={{ once: true, margin: "-80px" }}
+            >
               <LighthouseDashboard audit={activeProject.audit} isVisible={auditInView} />
-            </div>
+            </m.div>
 
           </div>
 

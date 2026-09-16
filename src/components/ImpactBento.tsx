@@ -2,16 +2,14 @@
 
 import React, { useRef, useEffect } from "react";
 import Link from "next/link";
-import { m, useInView, Variants, useMotionValue, useTransform, animate } from "framer-motion";
+import { m, Variants, useMotionValue, useTransform, animate } from "framer-motion";
 import { TrendingUp, Quote, Code2, PenTool, Star } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TextPlugin } from "gsap/TextPlugin";
 
 export default function ImpactBento() {
-  const ref = useRef(null);
   const codeIconRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const count = useMotionValue(0);
   const rounded = useTransform(count, Math.round);
@@ -37,15 +35,7 @@ export default function ImpactBento() {
     }
   }, []);
 
-  useEffect(() => {
-    if (isInView) {
-      const animation = animate(count, 215, {
-        duration: 2.5,
-        ease: "easeOut",
-      });
-      return animation.stop;
-    }
-  }, [isInView, count]);
+  // Animation is now triggered by onViewportEnter on the m.div
 
   const container: Variants = {
     hidden: { opacity: 0 },
@@ -75,10 +65,16 @@ export default function ImpactBento() {
         </div>
 
         <m.div
-          ref={ref}
           variants={container}
           initial="hidden"
-          animate={isInView ? "show" : "hidden"}
+          whileInView="show"
+          viewport={{ once: true, margin: "-50px" }}
+          onViewportEnter={() => {
+            animate(count, 215, {
+              duration: 2.5,
+              ease: "easeOut",
+            });
+          }}
           className="grid grid-cols-1 md:grid-cols-3 gap-6 md:auto-rows-[240px]"
         >
 

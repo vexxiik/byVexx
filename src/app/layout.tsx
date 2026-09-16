@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="cs" className={`${inter.variable} h-full antialiased`}>
+    <html lang="cs" className={`${inter.variable} antialiased`}>
       <head>
         <Script id="google-tag-manager" strategy="afterInteractive">
           {`
@@ -36,7 +36,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className="min-h-full flex flex-col font-sans">
+      <body className="font-sans min-h-screen">
         <noscript>
           <iframe 
             src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
