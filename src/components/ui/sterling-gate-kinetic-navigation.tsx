@@ -134,9 +134,9 @@ export function MobileNavigation() {
       <button
         onClick={toggle}
         aria-label={isOpen ? 'Zavřít menu' : 'Otevřít menu'}
-        className="relative flex items-center justify-center w-10 h-10 bg-transparent text-black rounded-full z-[60] transition-shadow duration-300 hover:bg-black/5 active:scale-95"
+        className="relative flex items-center justify-center w-12 h-12 bg-transparent text-black rounded-full z-[60] transition-shadow duration-300 hover:bg-black/5 active:scale-95"
       >
-        <MenuToggleIcon open={isOpen} className="size-6" duration={500} />
+        <MenuToggleIcon open={isOpen} className="size-8" duration={500} />
       </button>
 
       {/* Slide-in Panel */}
@@ -173,9 +173,9 @@ export function MobileNavigation() {
                     <button
                       onClick={close}
                       aria-label="Zavřít menu"
-                      className="flex items-center justify-center w-10 h-10 bg-transparent text-black rounded-full transition-shadow duration-300 hover:bg-black/5 active:scale-95"
+                      className="flex items-center justify-center w-12 h-12 bg-transparent text-black rounded-full transition-shadow duration-300 hover:bg-black/5 active:scale-95"
                     >
-                      <MenuToggleIcon open={true} className="size-6" duration={500} />
+                      <MenuToggleIcon open={true} className="size-8" duration={500} />
                     </button>
                   </div>
 

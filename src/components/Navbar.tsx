@@ -26,7 +26,7 @@ export default function Navbar() {
       className={cn(
         'fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] flex items-center justify-between transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
         isScrolled
-          ? 'max-w-[760px] bg-white/90 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-black/5 rounded-full px-6 py-2'
+          ? 'max-w-[800px] bg-white/90 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-black/5 rounded-full px-7 py-2.5'
           : 'max-w-7xl bg-transparent border-transparent px-0 py-0'
       )}
     >
@@ -34,7 +34,7 @@ export default function Navbar() {
       <Link
         href="/"
         className={cn(
-          "text-xl font-bold tracking-tight text-[#171717] transition-all duration-700 flex-shrink-0",
+          "text-2xl font-bold tracking-tight text-[#171717] transition-all duration-700 flex-shrink-0",
           !isScrolled && "px-2"
         )}
       >

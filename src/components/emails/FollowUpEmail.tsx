@@ -18,7 +18,13 @@ export default function FollowUpEmail() {
       <Preview>Design je k ničemu, pokud negeneruje zisk.</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Heading style={h1}>Proč weby od Vexx. vydělávají víc.</Heading>
+          <Text style={logo}>
+            Vexx<span style={{ color: "#3B82F6" }}>.</span>
+          </Text>
+          
+          <Heading style={h1}>
+            Proč weby od Vexx. <span style={{ color: "#3B82F6" }}>vydělávají víc.</span>
+          </Heading>
           
           <Text style={text}>Dobrý den,</Text>
           
@@ -30,13 +36,13 @@ export default function FollowUpEmail() {
           
           <Section style={listContainer}>
             <Text style={listItem}>
-              <strong>1. Blesková rychlost (Next.js):</strong> Stavíme na stejné infrastruktuře, jakou používají giganti jako Netflix nebo TikTok. Načtení v řádu milisekund.
+              <strong style={{ color: "#3B82F6" }}>1. Blesková rychlost (Next.js):</strong> Stavíme na stejné infrastruktuře, jakou používají giganti jako Netflix nebo TikTok. Načtení v řádu milisekund.
             </Text>
             <Text style={listItem}>
-              <strong>2. Psychologický copywriting:</strong> Nepíšeme výplňové texty. Píšeme argumenty, které bourají námitky a nutí klienta nakoupit.
+              <strong style={{ color: "#3B82F6" }}>2. Psychologický copywriting:</strong> Nepíšeme výplňové texty. Píšeme argumenty, které bourají námitky a nutí klienta nakoupit.
             </Text>
             <Text style={listItem}>
-              <strong>3. All-in-One infrastruktura:</strong> Od designu přes nasazení až po pokročilou analytiku (Vercel). Vše pod jednou střechou.
+              <strong style={{ color: "#3B82F6" }}>3. All-in-One infrastruktura:</strong> Od designu přes nasazení až po pokročilou analytiku (Vercel). Vše pod jednou střechou.
             </Text>
           </Section>
           
@@ -49,7 +55,7 @@ export default function FollowUpEmail() {
           </Text>
           
           <Section style={btnContainer}>
-            <Button style={button} href="https://byvexx.cz/#contact">
+            <Button style={button} href="https://vexx.cz/#contact">
               Rezervovat krátký hovor
             </Button>
           </Section>
@@ -65,22 +71,33 @@ export default function FollowUpEmail() {
 }
 
 const main = {
-  backgroundColor: "#ffffff",
+  backgroundColor: "#f9fafb",
   fontFamily:
     '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
 };
 
 const container = {
-  margin: "0 auto",
-  padding: "40px 20px",
-  maxWidth: "580px",
-  textAlign: "center" as const,
+  margin: "40px auto",
+  padding: "40px",
+  backgroundColor: "#ffffff",
+  borderRadius: "16px",
+  boxShadow: "0 4px 24px rgba(0,0,0,0.04)",
+  maxWidth: "600px",
+  textAlign: "left" as const,
+};
+
+const logo = {
+  fontSize: "24px",
+  fontWeight: "800",
+  letterSpacing: "-1px",
+  color: "#111111",
+  margin: "0 0 32px 0",
 };
 
 const h1 = {
   color: "#111111",
   fontSize: "28px",
-  fontWeight: "700",
+  fontWeight: "800",
   lineHeight: "1.2",
   margin: "0 0 24px",
   letterSpacing: "-0.5px",
@@ -96,41 +113,43 @@ const text = {
 const highlightText = {
   color: "#111111",
   fontSize: "18px",
-  fontWeight: "600",
+  fontWeight: "700",
   lineHeight: "1.6",
   margin: "32px 0 24px",
 };
 
 const strongText = {
   color: "#111111",
-  fontSize: "16px",
+  fontSize: "18px",
   fontWeight: "700",
   lineHeight: "1.6",
-  margin: "24px 0 24px",
+  margin: "32px 0 24px",
+  borderLeft: "4px solid #3B82F6",
+  paddingLeft: "16px",
 };
 
 const listContainer = {
   textAlign: "left" as const,
-  backgroundColor: "#f4f4f5",
+  backgroundColor: "#eff6ff", // blue-50
   padding: "24px",
   borderRadius: "12px",
   marginBottom: "24px",
 };
 
 const listItem = {
-  color: "#52525b",
+  color: "#3f3f46",
   fontSize: "15px",
   lineHeight: "1.6",
-  margin: "0 0 12px",
+  margin: "0 0 16px",
 };
 
 const btnContainer = {
-  marginTop: "32px",
+  marginTop: "40px",
   marginBottom: "32px",
 };
 
 const button = {
-  backgroundColor: "#111111",
+  backgroundColor: "#3B82F6",
   borderRadius: "8px",
   color: "#fff",
   fontSize: "15px",
@@ -138,13 +157,14 @@ const button = {
   textDecoration: "none",
   textAlign: "center" as const,
   display: "inline-block",
-  padding: "12px 24px",
+  padding: "14px 28px",
 };
 
 const footer = {
-  color: "#111111",
-  fontSize: "16px",
-  fontWeight: "600",
+  color: "#71717a",
+  fontSize: "15px",
   lineHeight: "1.6",
-  marginTop: "32px",
+  marginTop: "40px",
+  borderTop: "1px solid #e4e4e7",
+  paddingTop: "24px",
 };

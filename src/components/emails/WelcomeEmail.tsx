@@ -24,6 +24,10 @@ export default function WelcomeEmail({ name, message, isUrgent }: WelcomeEmailPr
       <Preview>Do 24 hodin se vám ozveme s konkrétním plánem.</Preview>
       <Body style={main}>
         <Container style={container}>
+          <Text style={logo}>
+            Vexx<span style={{ color: "#3B82F6" }}>.</span>
+          </Text>
+
           <Heading style={h1}>Vaše poptávka dorazila v pořádku.</Heading>
           
           <Text style={text}>Dobrý den,</Text>
@@ -32,7 +36,7 @@ export default function WelcomeEmail({ name, message, isUrgent }: WelcomeEmailPr
           </Text>
           <Text style={text}>
             Víme, že váš čas je drahý. Proto nebudeme zdržovat. Náš tým se nyní
-            seznamuje s detaily vašeho projektu a do 24 hodin se vám ozveme s konkrétním
+            seznamuje s detaily vašeho projektu a do <strong style={{ color: "#3B82F6" }}>24 hodin</strong> se vám ozveme s konkrétním
             návrhem dalšího postupu.
           </Text>
           <Text style={text}>
@@ -55,7 +59,7 @@ export default function WelcomeEmail({ name, message, isUrgent }: WelcomeEmailPr
           )}
           
           <Section style={btnContainer}>
-            <Button style={button} href="https://byvexx.cz/#work">
+            <Button style={button} href="https://vexx.cz/#work">
               Prohlédnout výsledky
             </Button>
           </Section>
@@ -71,22 +75,33 @@ export default function WelcomeEmail({ name, message, isUrgent }: WelcomeEmailPr
 }
 
 const main = {
-  backgroundColor: "#ffffff",
+  backgroundColor: "#f9fafb",
   fontFamily:
     '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
 };
 
 const container = {
-  margin: "0 auto",
-  padding: "40px 20px",
-  maxWidth: "580px",
-  textAlign: "center" as const,
+  margin: "40px auto",
+  padding: "40px",
+  backgroundColor: "#ffffff",
+  borderRadius: "16px",
+  boxShadow: "0 4px 24px rgba(0,0,0,0.04)",
+  maxWidth: "600px",
+  textAlign: "left" as const,
+};
+
+const logo = {
+  fontSize: "24px",
+  fontWeight: "800",
+  letterSpacing: "-1px",
+  color: "#111111",
+  margin: "0 0 32px 0",
 };
 
 const h1 = {
   color: "#111111",
   fontSize: "28px",
-  fontWeight: "700",
+  fontWeight: "800",
   lineHeight: "1.2",
   margin: "0 0 24px",
   letterSpacing: "-0.5px",
@@ -100,12 +115,12 @@ const text = {
 };
 
 const btnContainer = {
-  marginTop: "32px",
+  marginTop: "40px",
   marginBottom: "32px",
 };
 
 const button = {
-  backgroundColor: "#111111",
+  backgroundColor: "#3B82F6",
   borderRadius: "8px",
   color: "#fff",
   fontSize: "15px",
@@ -113,34 +128,36 @@ const button = {
   textDecoration: "none",
   textAlign: "center" as const,
   display: "inline-block",
-  padding: "12px 24px",
+  padding: "14px 28px",
 };
 
 const footer = {
-  color: "#111111",
-  fontSize: "16px",
-  fontWeight: "600",
+  color: "#71717a",
+  fontSize: "15px",
   lineHeight: "1.6",
-  marginTop: "32px",
+  marginTop: "40px",
+  borderTop: "1px solid #e4e4e7",
+  paddingTop: "24px",
 };
 
 const summarySection = {
   marginTop: "32px",
   padding: "24px",
-  backgroundColor: "#f4f4f5",
-  borderRadius: "8px",
+  backgroundColor: "#eff6ff", // blue-50
+  borderRadius: "12px",
   textAlign: "left" as const,
+  borderLeft: "4px solid #3B82F6",
 };
 
 const summaryTitle = {
   color: "#111111",
   fontSize: "16px",
-  fontWeight: "600",
+  fontWeight: "700",
   margin: "0 0 12px",
 };
 
 const summaryText = {
-  color: "#52525b",
+  color: "#3f3f46",
   fontSize: "15px",
   lineHeight: "1.5",
   margin: "0 0 8px",
