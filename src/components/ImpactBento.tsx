@@ -51,7 +51,7 @@ export default function ImpactBento() {
   };
 
   return (
-    <section className="py-24 lg:py-32 bg-[#FAFAFA] text-[#111] overflow-hidden">
+    <section className="py-24 lg:py-32 bg-[#FAFAFA] text-[#111] overflow-hidden" style={{ contain: 'paint' }}>
       <div className="container mx-auto px-6 lg:px-12 max-w-[85rem]">
 
         <div className="mb-16 md:mb-20">

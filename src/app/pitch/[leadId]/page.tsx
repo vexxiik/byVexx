@@ -16,8 +16,8 @@ export default async function PitchPage({ params }: { params: Promise<{ leadId: 
       <div className="absolute inset-0 z-0 opacity-[0.015] pointer-events-none mix-blend-multiply bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
       
       {/* Global subtle ambient breathing glows */}
-      <div className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#4F46E5]/[0.03] blur-[150px] pointer-events-none animate-pulse mix-blend-multiply -z-10" style={{ animationDuration: '10s' }}></div>
-      <div className="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-[#3b82f6]/[0.03] blur-[150px] pointer-events-none animate-pulse mix-blend-multiply -z-10" style={{ animationDuration: '15s', animationDelay: '2s' }}></div>
+      <div className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#4F46E5]/[0.03] blur-[150px] pointer-events-none animate-pulse mix-blend-multiply -z-10" style={{ animationDuration: '10s', willChange: 'transform, opacity' }}></div>
+      <div className="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-[#3b82f6]/[0.03] blur-[150px] pointer-events-none animate-pulse mix-blend-multiply -z-10" style={{ animationDuration: '15s', animationDelay: '2s', willChange: 'transform, opacity' }}></div>
 
       <ProposalTracker leadId={lead.id} />
       
@@ -41,7 +41,9 @@ export default async function PitchPage({ params }: { params: Promise<{ leadId: 
 
         {/* Startovací balíček */}
         <div className="bg-white rounded-3xl border border-zinc-200 p-8 md:p-12 mb-16 relative overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="absolute top-0 right-0 p-32 bg-blue-500/5 blur-[100px] rounded-full pointer-events-none" />
+          {/* Card Background & Decorative Elements */}
+          <div className="absolute inset-0 bg-white/60 backdrop-blur-3xl" />
+          <div className="absolute top-0 right-0 p-32 bg-blue-500/5 blur-[100px] rounded-full pointer-events-none" style={{ willChange: 'transform' }} />
           
           <h2 className="text-2xl font-bold mb-8 flex items-center gap-3 text-zinc-900">
             <div className="p-2 bg-blue-50 rounded-xl">
@@ -96,8 +98,9 @@ export default async function PitchPage({ params }: { params: Promise<{ leadId: 
         {/* 2. Prodejní sekce (Referral/Sales) */}
         <div className="mb-20 text-center animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150">
           <div className="bg-white rounded-3xl border border-zinc-200 p-10 md:p-16 shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden">
-            <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none" />
-            <div className="absolute top-10 right-10 w-32 h-32 bg-blue-500/10 blur-[80px] rounded-full pointer-events-none" />
+            {/* Background Elements */}
+            <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none" style={{ willChange: 'transform' }} />
+            <div className="absolute top-10 right-10 w-32 h-32 bg-blue-500/10 blur-[80px] rounded-full pointer-events-none" style={{ willChange: 'transform' }} />
             
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-zinc-900 tracking-tight relative z-10">
               Přesvědčte se o naší práci na vlastní oči

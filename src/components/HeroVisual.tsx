@@ -652,10 +652,10 @@ const StatusBeacon = React.memo(function StatusBeacon() {
 export default function HeroVisual() {
   return (
     <div className="relative w-full h-auto lg:h-full flex items-center justify-center p-4">
-      {/* ── Ambient Glows ── */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[500px] h-[500px] bg-blue-400/[0.08] rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-[60%] left-[60%] -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-indigo-400/[0.06] rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-[30%] left-[35%] -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-violet-400/[0.05] rounded-full blur-[100px] pointer-events-none" />
+      {/* Blurred decorative backgrounds */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[500px] h-[500px] bg-blue-400/[0.08] rounded-full blur-[120px] pointer-events-none" style={{ willChange: 'transform' }} />
+      <div className="absolute top-[60%] left-[60%] -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-indigo-400/[0.06] rounded-full blur-[120px] pointer-events-none" style={{ willChange: 'transform' }} />
+      <div className="absolute top-[30%] left-[35%] -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-violet-400/[0.05] rounded-full blur-[100px] pointer-events-none" style={{ willChange: 'transform' }} />
 
       {/* ── Card Composition ── */}
       <div className="relative z-10 w-full max-w-[540px] flex flex-col gap-5">

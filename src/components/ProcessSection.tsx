@@ -86,6 +86,7 @@ const DiscoveryVisual = React.memo(function DiscoveryVisual() {
         animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         className="absolute w-[300px] h-[300px] bg-blue-400/10 rounded-full blur-[80px]"
+        style={{ willChange: 'transform, opacity' }}
       />
 
       {/* SVG connections */}
@@ -275,7 +276,7 @@ const DevVisual = React.memo(function DevVisual() {
       <div className="absolute inset-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
       {/* Glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] bg-blue-500/10 blur-[60px] rounded-full" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] bg-blue-500/10 blur-[60px] rounded-full" style={{ willChange: 'transform' }} />
 
       <m.div
         animate={{ y: [0, -4, 0] }}
@@ -336,6 +337,7 @@ const LaunchVisual = React.memo(function LaunchVisual() {
         animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         className="absolute w-[250px] h-[250px] bg-emerald-400/15 rounded-full blur-[70px]"
+        style={{ willChange: 'transform, opacity' }}
       />
 
       <div className="relative z-10 w-full max-w-[340px] flex flex-col gap-3">
@@ -494,7 +496,7 @@ export default function ProcessSection() {
     <div
       ref={containerRef}
       className="relative w-full bg-white"
-      style={{ height: isMobile ? "auto" : `${100 * totalSlides}vh` }}
+      style={{ height: isMobile ? "auto" : `${100 * totalSlides}vh`, contain: 'paint' }}
     >
       {/* ── Viewport ── */}
       <div className={isMobile ? "flex flex-col pt-16 gap-16" : "sticky top-0 h-screen overflow-hidden flex flex-col pt-24 z-30"}>
