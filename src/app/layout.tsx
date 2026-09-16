@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import MotionProvider from "@/components/MotionProvider";
 import StickyCTA from "@/components/StickyCTA";
 import Script from "next/script";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -51,6 +52,7 @@ export default function RootLayout({
           </MotionProvider>
         </SmoothScroll>
         <StickyCTA />
+        <Toaster position="bottom-right" />
       </body>
     </html>
   );

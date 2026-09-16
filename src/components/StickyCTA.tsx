@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 export default function StickyCTA() {
+  const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -20,6 +22,9 @@ export default function StickyCTA() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Hide on admin pages
+  if (pathname?.startsWith('/admin')) return null;
 
   return (
     <div
