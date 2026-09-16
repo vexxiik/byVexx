@@ -25,7 +25,7 @@ function LenisBridge() {
     // Handle hash navigation (e.g. from external link to /#work)
     if (window.location.hash && lenis) {
       const hash = window.location.hash;
-      const target = document.querySelector(hash);
+      const target = document.querySelector(hash) as HTMLElement;
       
       if (target) {
         // Delay to allow dynamic components to render and layout to settle
