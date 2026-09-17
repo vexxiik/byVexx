@@ -280,9 +280,19 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
               <option value="Všechny">Všechny (Komplet)</option>
               <option value="Instalatér">Instalatér</option>
               <option value="Elektrikář">Elektrikář</option>
-              <option value="Truhlář">Truhlář</option>
               <option value="Zedník">Zedník</option>
+              <option value="Truhlář">Truhlář</option>
               <option value="Pokrývač">Pokrývač</option>
+              <option value="Topenář">Topenář</option>
+              <option value="Malíř pokojů">Malíř pokojů</option>
+              <option value="Hodinový manžel">Hodinový manžel</option>
+              <option value="Zámečník">Zámečník</option>
+              <option value="Sádrokartonář">Sádrokartonář</option>
+              <option value="Podlahář">Podlahář</option>
+              <option value="Automechanik">Automechanik</option>
+              <option value="Zemní práce">Zemní práce</option>
+              <option value="Rekonstrukce bytů">Rekonstrukce bytů</option>
+              <option value="Voda, plyn, topení">Voda, plyn, topení</option>
             </select>
           </div>
           <div className="flex-1 w-full">

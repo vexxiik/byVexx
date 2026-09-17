@@ -22,7 +22,12 @@ export async function POST(req: Request) {
     }
 
     const categoriesToScrape = category === "Všechny" 
-      ? ["Instalatér", "Elektrikář", "Truhlář", "Zedník", "Pokrývač"] 
+      ? [
+          "Instalatér", "Elektrikář", "Zedník", "Truhlář", "Pokrývač", 
+          "Topenář", "Malíř pokojů", "Hodinový manžel", "Zámečník", 
+          "Sádrokartonář", "Podlahář", "Automechanik", "Zemní práce", 
+          "Rekonstrukce bytů", "Voda, plyn, topení"
+        ] 
       : [category];
 
     const citiesToScrape = city === "Všechny"
