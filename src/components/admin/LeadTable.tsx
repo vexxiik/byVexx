@@ -414,10 +414,8 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          {/* Zobrazení */}
-          {view === "kanban" ? (
+      {/* Zobrazení */}
+      {view === "kanban" ? (
         <KanbanBoard 
           leads={leads} 
           updateStatus={updateStatus} 
@@ -536,16 +534,28 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
               </AnimatePresence>
             </tbody>
           </table>
-          </div>
-        </div>
-        )}
-        </div>
-        
-        {/* Terminal Section */}
-        <div className="lg:col-span-1 h-[600px] lg:h-auto">
-          <ScraperTerminal logs={scraperLogs} isScraping={isScrapingTerminal} />
         </div>
       </div>
+      )}
+      
+      {/* Terminal Section - Floating */}
+      <AnimatePresence>
+        {(isScrapingTerminal || scraperLogs.length > 0) && (
+          <m.div 
+            initial={{ opacity: 0, x: 100, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 100, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed right-6 bottom-6 w-[450px] h-[550px] z-50 shadow-2xl"
+          >
+            <ScraperTerminal 
+              logs={scraperLogs} 
+              isScraping={isScrapingTerminal} 
+              onClose={() => setScraperLogs([])}
+            />
+          </m.div>
+        )}
+      </AnimatePresence>
 
       {/* Floating Action Bar */}
       <AnimatePresence>
