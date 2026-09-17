@@ -5,6 +5,7 @@ import Link from "next/link";
 import { m, Variants, useMotionValue, useTransform, animate } from "framer-motion";
 import { TrendingUp, Quote, Code2, PenTool, Star } from "lucide-react";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TextPlugin } from "gsap/TextPlugin";
 
@@ -14,7 +15,7 @@ export default function ImpactBento() {
   const count = useMotionValue(0);
   const rounded = useTransform(count, Math.round);
 
-  useEffect(() => {
+  useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     if (codeIconRef.current) {
@@ -33,6 +34,7 @@ export default function ImpactBento() {
         }
       );
     }
+    ScrollTrigger.refresh();
   }, []);
 
   // Animation is now triggered by onViewportEnter on the m.div

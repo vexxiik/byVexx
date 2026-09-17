@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Link from 'next/link';
 
@@ -14,14 +15,14 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  useEffect(() => {
+  useGSAP(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    const ctx = gsap.context(() => {
-      const leftPart = el.querySelector('.lg\\:grid-cols-2 > div:first-child');
-      const rightPart = el.querySelector('.lg\\:grid-cols-2 > div:last-child');
+    const leftPart = el.querySelector('.lg\\:grid-cols-2 > div:first-child');
+    const rightPart = el.querySelector('.lg\\:grid-cols-2 > div:last-child');
 
+    if (leftPart && rightPart) {
       gsap.fromTo(
         leftPart,
         { opacity: 0, x: -150 },
@@ -32,10 +33,10 @@ export default function Contact() {
         { opacity: 0, x: 150 },
         { opacity: 1, x: 0, duration: 1, ease: 'back.out(1.2)', scrollTrigger: { trigger: el, start: 'top 80%' } }
       );
-    });
+    }
 
-    return () => ctx.revert();
-  }, []);
+    ScrollTrigger.refresh();
+  }, { scope: containerRef });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -499,7 +499,7 @@ export default function ProcessSection() {
       style={{ height: isMobile ? "auto" : `${100 * totalSlides}vh`, contain: 'paint' }}
     >
       {/* ── Viewport ── */}
-      <div className={isMobile ? "flex flex-col pt-16 gap-16" : "sticky top-0 h-screen overflow-hidden flex flex-col pt-24 z-30"}>
+      <div className={isMobile ? "flex flex-col pt-16 gap-16" : "sticky top-0 h-[100dvh] overflow-hidden flex flex-col pt-24 z-30"}>
 
         {/* ── Header with progress ── */}
         <header className="shrink-0 w-full px-6 md:px-16 lg:px-24 pb-2 md:pb-6 flex flex-col gap-6">

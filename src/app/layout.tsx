@@ -36,7 +36,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className="font-sans min-h-screen">
+      <body className="font-sans min-h-[100dvh]">
         <noscript>
           <iframe 
             src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"

@@ -1,9 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { m, useMotionValue, useTransform, animate } from 'framer-motion';
 import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -289,41 +290,36 @@ export default function Testimonials() {
 
   const activeProject = projects.find(p => p.id === activeId) || projects[0];
 
-  useEffect(() => {
+  useGSAP(() => {
     const el = containerRef.current;
     if (el) {
-      const ctx = gsap.context(() => {
-        gsap.fromTo(
-          el,
-          { opacity: 0, y: 50 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: el,
-              start: 'top 80%',
-            }
+      gsap.fromTo(
+        el,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 80%',
           }
-        );
-      });
-      return () => ctx.revert();
+        }
+      );
+      ScrollTrigger.refresh();
     }
-  }, []);
+  }, { scope: containerRef });
 
-  useEffect(() => {
+  useGSAP(() => {
     if (leftColRef.current) {
-      const ctx = gsap.context(() => {
-        gsap.fromTo(
-          leftColRef.current,
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
-        );
-      });
-      return () => ctx.revert();
+      gsap.fromTo(
+        leftColRef.current,
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
+      );
     }
-  }, [activeId]);
+  }, { dependencies: [activeId], scope: containerRef });
 
   return (
     <section id="work" className="py-24 px-4 sm:px-6 bg-[#f4f4f5] border-t border-black/5" ref={containerRef}>

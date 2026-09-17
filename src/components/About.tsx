@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -9,33 +10,31 @@ gsap.registerPlugin(ScrollTrigger);
 export default function About() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useGSAP(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    const ctx = gsap.context(() => {
-      const items = el.querySelectorAll('.animate-item');
-      items.forEach((item, i) => {
-        gsap.fromTo(
-          item,
-          { opacity: 0, x: i % 2 === 0 ? -100 : 100, y: 30 },
-          {
-            opacity: 1,
-            x: 0,
-            y: 0,
-            duration: 1,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: item,
-              start: 'top 85%',
-            },
-          }
-        );
-      });
+    const items = el.querySelectorAll('.animate-item');
+    items.forEach((item, i) => {
+      gsap.fromTo(
+        item,
+        { opacity: 0, x: i % 2 === 0 ? -100 : 100, y: 30 },
+        {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: item,
+            start: 'top 85%',
+          },
+        }
+      );
     });
 
-    return () => ctx.revert();
-  }, []);
+    ScrollTrigger.refresh();
+  }, { scope: containerRef });
 
   return (
     <section id="about" className="py-24 px-6 max-w-4xl mx-auto" ref={containerRef}>

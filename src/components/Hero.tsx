@@ -37,7 +37,7 @@ function PremiumCTA() {
 ───────────────────────────────────────────────────────────── */
 export default function Hero() {
   return (
-    <section className="relative min-h-screen bg-[#FAFAFA] overflow-hidden flex flex-col justify-center selection:bg-blue-500/30" style={{ contain: 'paint' }}>
+    <section className="relative min-h-[100dvh] bg-[#FAFAFA] overflow-hidden flex flex-col justify-center selection:bg-blue-500/30" style={{ contain: 'paint' }}>
       {/* Subtle noise texture */}
       <div className="absolute inset-0 z-0 opacity-[0.015] pointer-events-none mix-blend-multiply bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 

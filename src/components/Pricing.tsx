@@ -53,7 +53,7 @@ export default function Pricing() {
           <m.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-50px" }}
             className="text-[2.25rem] md:text-[3.5rem] font-bold tracking-tight text-[#111] leading-[1.1] mb-6"
           >
             Vyberte si úroveň <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">partnerství.</span>
@@ -61,7 +61,7 @@ export default function Pricing() {
           <m.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-50px" }}
             transition={{ delay: 0.1 }}
             className="text-lg md:text-xl text-zinc-500 font-light max-w-2xl mx-auto leading-relaxed"
           >

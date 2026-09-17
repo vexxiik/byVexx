@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -46,33 +47,31 @@ export default function Expertise() {
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
-  useEffect(() => {
+  useGSAP(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    const ctx = gsap.context(() => {
-      cardsRef.current.forEach((card, i) => {
-        if (!card) return;
-        gsap.fromTo(
-          card,
-          { opacity: 0, x: i % 2 === 0 ? -150 : 150, y: 50 },
-          {
-            opacity: 1,
-            x: 0,
-            y: 0,
-            duration: 1,
-            ease: 'back.out(1.2)',
-            scrollTrigger: {
-              trigger: card,
-              start: 'top 85%',
-            },
-          }
-        );
-      });
+    cardsRef.current.forEach((card, i) => {
+      if (!card) return;
+      gsap.fromTo(
+        card,
+        { opacity: 0, x: i % 2 === 0 ? -150 : 150, y: 50 },
+        {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          duration: 1,
+          ease: 'back.out(1.2)',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%',
+          },
+        }
+      );
     });
 
-    return () => ctx.revert();
-  }, []);
+    ScrollTrigger.refresh();
+  }, { scope: containerRef });
 
   return (
     <section id="expertise" ref={containerRef} className="py-24 px-6 max-w-7xl mx-auto">

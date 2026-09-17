@@ -11,7 +11,7 @@ export default async function AdminPage() {
   const session = await auth();
   
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect("/crm");
   }
 
   const user = await prisma.user.findUnique({
@@ -25,7 +25,7 @@ export default async function AdminPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] text-[#111111] p-8 font-sans selection:bg-blue-500/30">
+    <div className="min-h-[100dvh] bg-[#f9fafb] text-[#111111] p-8 font-sans selection:bg-blue-500/30">
       <div className="max-w-7xl mx-auto">
         <header className="flex flex-col md:flex-row md:items-center justify-between mb-10 pb-6 border-b border-gray-200 gap-6">
           <div className="flex items-center gap-4">
@@ -40,7 +40,7 @@ export default async function AdminPage() {
           <div className="flex items-center">
             <form action={async () => {
               "use server";
-              await signOut({ redirectTo: "/login" });
+              await signOut({ redirectTo: "/crm" });
             }}>
               <button
                 type="submit"

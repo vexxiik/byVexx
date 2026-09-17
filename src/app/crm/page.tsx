@@ -39,7 +39,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] flex items-center justify-center p-4 font-sans selection:bg-blue-500/30">
+    <div className="min-h-[100dvh] bg-[#f9fafb] flex items-center justify-center p-4 font-sans selection:bg-blue-500/30">
       <m.div 
         initial={{ opacity: 0, y: 10, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -68,7 +68,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="jakub@vexx.cz"
+                placeholder="vase@emailova.adresa"
                 required
                 className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 focus:bg-white transition-all"
               />
@@ -87,7 +87,6 @@ export default function LoginPage() {
                 required
                 className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 focus:bg-white transition-all"
               />
-              <p className="text-xs text-gray-400 mt-2">Pro testování: heslo je "admin123"</p>
             </div>
 
             {error && (

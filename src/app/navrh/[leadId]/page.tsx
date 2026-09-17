@@ -11,7 +11,7 @@ export default async function PitchPage({ params }: { params: Promise<{ leadId: 
   if (!lead) return notFound();
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 font-sans selection:bg-blue-500/30 relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-[#FAFAFA] text-zinc-900 font-sans selection:bg-blue-500/30 relative overflow-hidden">
       {/* Subtle noise texture */}
       <div className="absolute inset-0 z-0 opacity-[0.015] pointer-events-none mix-blend-multiply bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
       
