@@ -6,9 +6,10 @@ import { Lead } from "@prisma/client";
 import { toast } from "sonner";
 import { m, AnimatePresence } from "framer-motion";
 import { Drawer } from "vaul";
-import { deleteLeadsAction, bulkUpdateStatusAction, updateLeadStatusAction, updateLeadNotesAction, addLeadAction, updateSmsTemplateAction } from "@/app/actions/leads";
+import { deleteLeadsAction, bulkUpdateStatusAction, updateLeadStatusAction, updateLeadNotesAction, addLeadAction, updateSmsTemplateAction, deleteAllLeadsAction } from "@/app/actions/leads";
+import { generateAndSendEmail } from "@/app/actions/campaigns";
 import KanbanBoard from "./KanbanBoard";
-import { LayoutGrid, List, Plus, Settings, Phone as PhoneIcon, MessageCircle, Link2, Eye, ExternalLink } from "lucide-react";
+import { LayoutGrid, List, Plus, Settings, Phone as PhoneIcon, MessageCircle, Link2, Eye, ExternalLink, Zap, Mail, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
@@ -23,12 +24,19 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isPending, startTransition] = useTransition();
 
+  // Campaign State
+  const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
+  const [isCampaignRunning, setIsCampaignRunning] = useState(false);
+  const [isDryRun, setIsDryRun] = useState(true);
+  const [campaignProgress, setCampaignProgress] = useState({ current: 0, total: 0, companyName: "" });
+
   // Detail Drawer state
   const [selectedLead, setSelectedLead] = useState<any | null>(null);
   const [drawerNotes, setDrawerNotes] = useState("");
   const [drawerIco, setDrawerIco] = useState("");
   const [drawerAddress, setDrawerAddress] = useState("");
   const [drawerCeo, setDrawerCeo] = useState("");
+  const [drawerEmail, setDrawerEmail] = useState("");
 
   const [view, setView] = useState<"table" | "kanban">("table");
 
@@ -93,14 +101,15 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
   const saveDrawerDetails = async () => {
     if (!selectedLead) return;
     
-    setLeads(prev => prev.map(l => l.id === selectedLead.id ? { ...l, notes: drawerNotes, ico: drawerIco, address: drawerAddress, ceoName: drawerCeo } : l));
+    setLeads(prev => prev.map(l => l.id === selectedLead.id ? { ...l, notes: drawerNotes, ico: drawerIco, address: drawerAddress, ceoName: drawerCeo, email: drawerEmail } : l));
     
     const res = await updateLeadNotesAction({ 
       id: selectedLead.id, 
       notes: drawerNotes, 
       ico: drawerIco,
       address: drawerAddress,
-      ceoName: drawerCeo
+      ceoName: drawerCeo,
+      email: drawerEmail
     });
     
     if (res.error) {
@@ -109,6 +118,54 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
     } else {
       toast.success("Údaje uloženy.");
     }
+  };
+
+  const handleInlineEmailSave = async () => {
+    if (!selectedLead) return;
+    
+    setLeads(prev => prev.map(l => l.id === selectedLead.id ? { ...l, email: drawerEmail } : l));
+    
+    const res = await updateLeadNotesAction({ 
+      id: selectedLead.id, 
+      email: drawerEmail
+    });
+    
+    if (res.error) {
+      toast.error(res.error);
+    } else {
+      toast.success("E-mail úspěšně uložen.");
+    }
+  };
+
+  const handleStartCampaign = async () => {
+    if (selectedIds.size === 0) return;
+    const idsToProcess = Array.from(selectedIds);
+    
+    setIsCampaignRunning(true);
+    setCampaignProgress({ current: 0, total: idsToProcess.length, companyName: "" });
+    
+    let successCount = 0;
+    
+    for (let i = 0; i < idsToProcess.length; i++) {
+      const id = idsToProcess[i];
+      const lead = leads.find(l => l.id === id);
+      setCampaignProgress({ current: i + 1, total: idsToProcess.length, companyName: lead?.companyName || "Neznámá firma" });
+      
+      const res = await generateAndSendEmail(id, isDryRun);
+      if (res.success) {
+        successCount++;
+        // Update local state dynamically
+        setLeads(prev => prev.map(l => l.id === id ? { ...l, lastEmailedAt: new Date(), lastEmailBody: res.body } : l));
+      } else {
+        toast.error(`Chyba u ${lead?.companyName}: ${res.error}`);
+      }
+    }
+    
+    setIsCampaignRunning(false);
+    setIsCampaignModalOpen(false);
+    setSelectedIds(new Set());
+    
+    toast.success(`Kampaň dokončena. Úspěšně odesláno: ${successCount}/${idsToProcess.length}`);
   };
 
   const handleSaveSettings = async () => {
@@ -178,12 +235,13 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
     });
   };
 
-  const openDrawer = (lead: Lead) => {
+  const openDrawer = (lead: any) => {
     setSelectedLead(lead);
     setDrawerNotes(lead.notes || "");
     setDrawerIco(lead.ico || "");
     setDrawerAddress(lead.address || "");
     setDrawerCeo(lead.ceoName || "");
+    setDrawerEmail(lead.email || "");
   };
 
   const statusColors: Record<string, string> = {
@@ -260,8 +318,27 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
           <button
             onClick={() => setIsSettingsOpen(true)}
             className="h-11 px-4 bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 rounded-lg transition-colors flex items-center justify-center shadow-sm"
+            title="Nastavení SMS / E-mailů"
           >
             <Settings className="size-5 text-gray-600" />
+          </button>
+          <button
+            onClick={async () => {
+              if (window.confirm("Opravdu chcete smazat VŠECHNY leady? Tuto akci nelze vrátit.")) {
+                const res = await deleteAllLeadsAction();
+                if (res.error) {
+                  toast.error(res.error);
+                } else {
+                  toast.success(`Všechny leady (${res.count}) byly smazány.`);
+                  setLeads([]);
+                  setSelectedIds(new Set());
+                }
+              }
+            }}
+            className="h-11 px-4 bg-white hover:bg-red-50 text-red-500 border border-red-200 rounded-lg transition-colors flex items-center justify-center shadow-sm shrink-0"
+            title="Smazat všechny leady"
+          >
+            <Trash2 className="size-5" />
           </button>
         </div>
       </div>
@@ -354,9 +431,12 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
                       />
                     </td>
                     <td className="px-6 py-4">
-                      <button onClick={() => openDrawer(lead)} className="font-medium text-gray-900 hover:text-blue-600 hover:underline transition-colors text-left">
-                        {lead.companyName}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => openDrawer(lead)} className="font-medium text-gray-900 hover:text-blue-600 hover:underline transition-colors text-left line-clamp-1">
+                          {lead.companyName}
+                        </button>
+                        {lead.email && <span title={`E-mail: ${lead.email}`}><Mail className="size-4 text-blue-500 flex-shrink-0" /></span>}
+                      </div>
                       {lead.notes && <div className="text-xs text-gray-400 mt-1 line-clamp-1">{lead.notes}</div>}
                     </td>
                     <td className="px-6 py-4 text-gray-600">
@@ -434,6 +514,12 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
                   <option key={key} value={key} className="text-black">{statusLabels[key]}</option>
                 ))}
               </select>
+              <button 
+                onClick={() => setIsCampaignModalOpen(true)}
+                className="text-amber-400 hover:text-amber-300 text-sm font-medium flex items-center gap-1.5 ml-4"
+              >
+                <Zap className="size-4" /> AI Kampaň
+              </button>
               <button 
                 onClick={handleBulkDelete}
                 className="text-red-400 hover:text-red-300 text-sm font-medium flex items-center gap-1.5 ml-4"
@@ -518,15 +604,36 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">IČO</label>
-                    <input 
-                      type="text" 
-                      value={drawerIco} 
-                      onChange={e => setDrawerIco(e.target.value)}
-                      placeholder="Např. 12345678"
-                      className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all"
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">IČO</label>
+                      <input 
+                        type="text" 
+                        value={drawerIco} 
+                        onChange={e => setDrawerIco(e.target.value)}
+                        placeholder="Např. 12345678"
+                        className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">E-mail</label>
+                      <div className="flex gap-2">
+                        <input 
+                          type="email" 
+                          value={drawerEmail} 
+                          onChange={e => setDrawerEmail(e.target.value)}
+                          placeholder="Např. info@firma.cz"
+                          className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all"
+                        />
+                        <button 
+                          onClick={handleInlineEmailSave}
+                          className="h-11 px-3 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 rounded-lg flex items-center justify-center transition-colors"
+                          title="Rychle uložit e-mail"
+                        >
+                          <Save className="size-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
                   <div>
@@ -538,6 +645,16 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
                       className="w-full h-32 p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all resize-none"
                     />
                   </div>
+
+                  {selectedLead?.lastEmailedAt && selectedLead?.lastEmailBody && (
+                    <div className="mt-4 border-t border-gray-100 pt-6">
+                      <h4 className="text-sm font-bold text-gray-900 mb-3">Poslední oslovení (E-mail)</h4>
+                      <p className="text-xs text-gray-500 mb-3">Odesláno / Vygenerováno: {new Date(selectedLead.lastEmailedAt).toLocaleString("cs-CZ")}</p>
+                      <div className="bg-zinc-50 p-4 rounded-xl border border-gray-200 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+                        {selectedLead.lastEmailBody}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="pt-4 flex justify-end gap-3">
                     <button 
@@ -562,6 +679,64 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
           </Drawer.Content>
         </Drawer.Portal>
       </Drawer.Root>
+
+      {/* Campaign Confirmation Modal */}
+      {isCampaignModalOpen && (
+        <div className="fixed inset-0 bg-black/40 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <h3 className="text-xl font-bold mb-2">Spustit AI Kampaň?</h3>
+            {!isCampaignRunning ? (
+              <>
+                <p className="text-gray-600 mb-4">
+                  Opravdu chcete vygenerovat AI e-mail pro {selectedIds.size} vybraných leadů? Ujistěte se, že mají vyplněnou e-mailovou adresu.
+                </p>
+                <div className="flex items-center mb-6 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                  <input 
+                    type="checkbox" 
+                    id="dryRun" 
+                    checked={isDryRun} 
+                    onChange={(e) => setIsDryRun(e.target.checked)}
+                    className="size-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  />
+                  <label htmlFor="dryRun" className="ml-3 text-sm font-medium text-gray-700 cursor-pointer select-none">
+                    Testovací režim <span className="font-normal text-gray-500">(Pouze vygenerovat, neodesílat)</span>
+                  </label>
+                </div>
+                <div className="flex justify-end gap-3">
+                  <button 
+                    onClick={() => setIsCampaignModalOpen(false)}
+                    className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                  >
+                    Zrušit
+                  </button>
+                  <button 
+                    onClick={handleStartCampaign}
+                    className="px-5 py-2.5 rounded-lg text-sm font-medium bg-[#111] hover:bg-[#222] text-white transition-colors"
+                  >
+                    Ano, spustit
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="py-6 flex flex-col items-center">
+                <Loader2 className="size-8 text-blue-600 animate-spin mb-4" />
+                <p className="font-medium text-gray-900 mb-2">Generuji a odesílám e-maily...</p>
+                <p className="text-sm text-gray-500 mb-6">Právě zpracovávám: {campaignProgress.companyName}</p>
+                
+                <div className="w-full bg-gray-100 rounded-full h-2.5 mb-2 overflow-hidden">
+                  <div 
+                    className="bg-blue-600 h-2.5 rounded-full transition-all duration-300" 
+                    style={{ width: `${(campaignProgress.current / campaignProgress.total) * 100}%` }}
+                  ></div>
+                </div>
+                <p className="text-xs text-gray-500 text-center w-full font-medium">
+                  Zpracováno {campaignProgress.current} / {campaignProgress.total}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Vaul Drawer pro Přidání Leadu */}
       <Drawer.Root open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
@@ -599,7 +774,7 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
                       required
                       value={addForm.phone} 
                       onChange={e => setAddForm(prev => ({ ...prev, phone: e.target.value }))}
-                      placeholder="Např. +420 123 456 789"
+                      placeholder="Např. 604256988"
                       className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all"
                     />
                   </div>

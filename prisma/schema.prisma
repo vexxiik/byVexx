@@ -43,6 +43,7 @@ model User {
   image         String?
   smsTemplate   String?
   credits       Int       @default(100)
+  resendApiKey  String?
   accounts      Account[]
   sessions      Session[]
   leads         Lead[]
@@ -71,6 +72,9 @@ model Lead {
   referralClickedAt DateTime?
   isArchived      Boolean  @default(false)
   lastContactedAt DateTime?
+  lastEmailedAt   DateTime?
+  lastEmailBody   String?  @db.Text
+  email           String?
   createdAt       DateTime @default(now())
 
   userId          String?

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Lead } from "@prisma/client";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { MapPin, Phone, Building2 } from "lucide-react";
+import { MapPin, Phone, Building2, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface KanbanBoardProps {
@@ -96,6 +96,7 @@ export default function KanbanBoard({ leads, onCardClick, updateStatus }: Kanban
                                   <h4 className="font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
                                     {lead.companyName}
                                   </h4>
+                                  {lead.email && <span title={`E-mail: ${lead.email}`}><Mail className="size-3.5 text-blue-500 flex-shrink-0 mt-0.5" /></span>}
                                 </div>
                                 
                                 <div className="space-y-1.5 mt-3">

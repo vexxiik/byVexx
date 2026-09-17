@@ -68,7 +68,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@vexx.cz"
+                placeholder="jakub@vexx.cz"
                 required
                 className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 focus:bg-white transition-all"
               />

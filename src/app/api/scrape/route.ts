@@ -100,6 +100,35 @@ export async function POST(req: Request) {
               const companyName = await titleLocator.first().innerText();
 
               if (phone && companyName) {
+                // Zkusíme najít e-mail pomocí DuckDuckGo
+                let foundEmail: string | null = null;
+                try {
+                  const ddgPage = await context.newPage();
+                  const searchQuery = `${companyName} ${currentCity} e-mail`;
+                  await ddgPage.goto(`https://duckduckgo.com/html/?q=${encodeURIComponent(searchQuery)}`, { waitUntil: 'domcontentloaded', timeout: 10000 });
+                  
+                  const pageText = await ddgPage.evaluate(() => document.body.innerText);
+                  await ddgPage.close();
+
+                  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+                  const matches = pageText.match(emailRegex);
+                  
+                  if (matches && matches.length > 0) {
+                    const blacklistedDomains = ['firmy.cz', 'najisto.cz', 'epoptavka.cz', 'aaapoptavka.cz', 'zive.cz', 'heureka.cz', 'bazos.cz', 'sbazar.cz', 'duckduckgo.com'];
+                    
+                    // Najít první email, jehož doména není na blacklistu
+                    for (const email of matches) {
+                      const domain = email.split('@')[1].toLowerCase();
+                      if (!blacklistedDomains.includes(domain)) {
+                        foundEmail = email.toLowerCase();
+                        break; // Našli jsme relevantní
+                      }
+                    }
+                  }
+                } catch (e) {
+                  console.error(`Chyba při hledání e-mailu pro ${companyName}:`, e);
+                }
+
                 // Uložení do databáze (s ohledem na userId)
                 try {
                   const aresData = await fetchAresData(companyName);
@@ -112,6 +141,7 @@ export async function POST(req: Request) {
                       userId: session.user.id,
                       ico: aresData?.ico || undefined,
                       address: aresData?.address || undefined,
+                      ...(foundEmail && { email: foundEmail }),
                     },
                     create: {
                       companyName,
@@ -121,6 +151,7 @@ export async function POST(req: Request) {
                       userId: session.user.id,
                       ico: aresData?.ico || null,
                       address: aresData?.address || null,
+                      email: foundEmail || null,
                     }
                   });
 

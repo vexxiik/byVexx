@@ -25,6 +25,7 @@ const UpdateNotesSchema = z.object({
   ico: z.string().optional(),
   address: z.string().optional(),
   ceoName: z.string().optional(),
+  email: z.string().optional(),
 });
 
 /**
@@ -108,7 +109,7 @@ export async function updateLeadStatusAction(payload: { id: string; status: any 
 /**
  * Zabezpečená změna poznámek a IČO leadu.
  */
-export async function updateLeadNotesAction(payload: { id: string; notes?: string; ico?: string; address?: string; ceoName?: string }) {
+export async function updateLeadNotesAction(payload: { id: string; notes?: string; ico?: string; address?: string; ceoName?: string; email?: string }) {
   const session = await auth();
   if (!session?.user?.id) return { error: "Unauthorized" };
 
@@ -126,6 +127,7 @@ export async function updateLeadNotesAction(payload: { id: string; notes?: strin
         ico: parsed.data.ico,
         address: parsed.data.address,
         ceoName: parsed.data.ceoName,
+        email: parsed.data.email,
       },
     });
     revalidatePath("/admin");
@@ -259,5 +261,25 @@ export async function trackReferralClickAction(leadId: string) {
   } catch (error) {
     console.error("Chyba při trackování prokliku:", error);
     return { error: "Tracking failed" };
+  }
+}
+
+/**
+ * Zabezpečené smazání VŠECH leadů uživatele.
+ */
+export async function deleteAllLeadsAction() {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Unauthorized" };
+
+  try {
+    const res = await prisma.lead.deleteMany({
+      where: {
+        userId: session.user.id, // IDOR Ochrana
+      },
+    });
+    revalidatePath("/admin");
+    return { success: true, count: res.count };
+  } catch (error) {
+    return { error: "Failed to delete all leads" };
   }
 }

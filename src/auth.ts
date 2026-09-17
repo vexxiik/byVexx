@@ -11,7 +11,7 @@ export const authConfig = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "admin@vexx.cz" },
+        email: { label: "Email", type: "email", placeholder: "jakub@vexx.cz" },
         password: { label: "Heslo", type: "password" }
       },
       async authorize(credentials) {

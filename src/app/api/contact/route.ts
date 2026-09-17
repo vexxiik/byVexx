@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
     // Send the immediate Welcome Email
     const welcomeData = await resend.emails.send({
-      from: 'Vexx <noreply@vexx.cz>',
+      from: 'Vexx <jakub@vexx.cz>',
       to: email,
       bcc: 'jakub.sokol2007@gmail.com', // Skrytá kopie pro majitele webu
       subject: 'Vaše poptávka dorazila v pořádku.',
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
     // Send the scheduled Follow Up Email
     const followUpData = await resend.emails.send({
-      from: 'Vexx <noreply@vexx.cz>',
+      from: 'Vexx <jakub@vexx.cz>',
       to: email,
       subject: 'Proč weby od Vexx. vydělávají víc.',
       react: FollowUpEmail(),
