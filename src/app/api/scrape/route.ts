@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { chromium } from "playwright";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
-import { fetchAresData } from "@/lib/ares";
 
 export async function POST(req: Request) {
   try {
@@ -32,138 +31,147 @@ export async function POST(req: Request) {
 
     let totalAddedCount = 0;
 
-    // Launch Playwright (must have run `npx playwright install` locally)
-    const browser = await chromium.launch({ headless: true });
+    // Lokálně chceme reálný prohlížeč (headless: false), aby nás zivefirmy neblokovaly hned,
+    // v produkci necháme headless: true, ale jak domluveno, uživatel to bude pouštět primárně lokálně.
+    const isDev = process.env.NODE_ENV === 'development';
+    const browser = await chromium.launch({ headless: !isDev });
+    
     const context = await browser.newContext({
       locale: 'cs-CZ',
-      geolocation: { longitude: 15.77, latitude: 50.04 }, // Pardubice region approx
-      permissions: ['geolocation']
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     });
     const page = await context.newPage();
 
     for (const currentCity of citiesToScrape) {
       for (const currentCategory of categoriesToScrape) {
-        console.log(`Zahajuji těžbu: ${currentCategory} v ${currentCity}`);
+        console.log(`Zahajuji těžbu na zivefirmy.cz: ${currentCategory} v ${currentCity}`);
 
-        const query = `${currentCategory} ${currentCity}`;
-        await page.goto(`https://www.google.com/maps/search/${encodeURIComponent(query)}`);
+        const url = `https://www.zivefirmy.cz/vyhledavani?q=${encodeURIComponent(currentCategory)}&loc=${encodeURIComponent(currentCity)}`;
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        
+        // Náhodná pauza pro simulaci lidského chování (1-3 sekundy)
+        await page.waitForTimeout(Math.floor(Math.random() * 2000) + 1000);
 
-        // Přijetí cookies pokud vyskočí
         try {
-          const acceptButton = page.locator('button:has-text("Přijmout vše")');
+          const acceptButton = page.locator('text="Souhlasím"');
           if (await acceptButton.count() > 0) {
             await acceptButton.first().click({ timeout: 2000 });
+            await page.waitForTimeout(1000);
           }
         } catch (e) {
-          // Ignorovat, pokud se neobjeví
+          // Ignorovat
         }
 
-        // Počkat na načtení výsledků
-        await page.waitForTimeout(3000);
-
-        // Najdeme feed s výsledky a posuneme dolů pro načtení více dat
-        const feed = page.locator('div[role="feed"]');
-        if (await feed.isVisible()) {
-          await feed.hover();
-          await page.mouse.wheel(0, 10000);
-          await page.waitForTimeout(2000);
-        }
-
-        // Najít všechny odkazy na firmy v seznamu
-        const elements = page.locator('a[href*="/maps/place/"]');
-        const links = await elements.evaluateAll((els) => els.map((el) => (el as HTMLAnchorElement).href));
-        
-        // Zpracování jen prvních 10 odkazů na každou kombinaci, aby API nespadlo
-        const linksToProcess = Array.from(new Set(links)).slice(0, 10);
-        
-        for (const link of linksToProcess) {
-          await page.goto(link);
-          await page.waitForTimeout(1000);
-
-          try {
-            // Zjistíme, jestli má firma webové stránky
-            const websiteLink = page.locator('a[data-item-id="authority"]');
-            const hasWebsite = await websiteLink.count() > 0;
-
-            // Pokud web MÁ, ignorujeme
-            if (hasWebsite) {
-              continue;
-            }
-
-            // Zjistíme telefon (v Google Maps začínají href obvykle s "tel:")
-            const phoneLocator = page.locator('button[data-item-id^="phone:tel:"]');
-            if (await phoneLocator.count() > 0) {
-              let phoneAttr = await phoneLocator.first().getAttribute('data-item-id');
-              const phone = phoneAttr?.replace('phone:tel:', '').trim();
+        // Získání odkazů na firmy
+        const links = await page.evaluate(() => {
+          const results: string[] = [];
+          
+          // Zkusíme najít bloky firem (obvykle .company-item, .firm)
+          const blocks = document.querySelectorAll('div.company-item, div.company, li.company, div.firm');
+          
+          if (blocks.length > 0) {
+            blocks.forEach(block => {
+              // Hledáme odkaz na webovou stránku firmy
+              const hasWeb = Array.from(block.querySelectorAll('a')).some(a => {
+                const h = a.href || '';
+                return h.startsWith('http') && !h.includes('zivefirmy.cz') && !h.includes('facebook.com');
+              });
               
-              const titleLocator = page.locator('h1');
-              const companyName = await titleLocator.first().innerText();
-
-              if (phone && companyName) {
-                // Zkusíme najít e-mail pomocí DuckDuckGo
-                let foundEmail: string | null = null;
-                try {
-                  const ddgPage = await context.newPage();
-                  const searchQuery = `${companyName} ${currentCity} e-mail`;
-                  await ddgPage.goto(`https://duckduckgo.com/html/?q=${encodeURIComponent(searchQuery)}`, { waitUntil: 'domcontentloaded', timeout: 10000 });
-                  
-                  const pageText = await ddgPage.evaluate(() => document.body.innerText);
-                  await ddgPage.close();
-
-                  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-                  const matches = pageText.match(emailRegex);
-                  
-                  if (matches && matches.length > 0) {
-                    const blacklistedDomains = ['firmy.cz', 'najisto.cz', 'epoptavka.cz', 'aaapoptavka.cz', 'zive.cz', 'heureka.cz', 'bazos.cz', 'sbazar.cz', 'duckduckgo.com'];
-                    
-                    // Najít první email, jehož doména není na blacklistu
-                    for (const email of matches) {
-                      const domain = email.split('@')[1].toLowerCase();
-                      if (!blacklistedDomains.includes(domain)) {
-                        foundEmail = email.toLowerCase();
-                        break; // Našli jsme relevantní
-                      }
-                    }
-                  }
-                } catch (e) {
-                  console.error(`Chyba při hledání e-mailu pro ${companyName}:`, e);
-                }
-
-                // Uložení do databáze (s ohledem na userId)
-                try {
-                  const aresData = await fetchAresData(companyName);
-                  await prisma.lead.upsert({
-                    where: { phone },
-                    update: {
-                      companyName,
-                      category: currentCategory,
-                      city: currentCity,
-                      userId: session.user.id,
-                      ico: aresData?.ico || undefined,
-                      address: aresData?.address || undefined,
-                      ...(foundEmail && { email: foundEmail }),
-                    },
-                    create: {
-                      companyName,
-                      phone,
-                      category: currentCategory,
-                      city: currentCity,
-                      userId: session.user.id,
-                      ico: aresData?.ico || null,
-                      address: aresData?.address || null,
-                      email: foundEmail || null,
-                    }
-                  });
-
-                  await prisma.user.update({
-                    where: { id: session.user.id },
-                    data: { credits: { decrement: 1 } }
-                  });
-                  totalAddedCount++;
-                } catch (error) {
-                  console.error(`Chyba zápisu pro [${companyName}]:`, error);
+              // Pokud firma nemá web, najdeme její detail
+              if (!hasWeb) {
+                const detailLink = block.querySelector('a[href*="_f"]');
+                if (detailLink && (detailLink as HTMLAnchorElement).href) {
+                  results.push((detailLink as HTMLAnchorElement).href);
                 }
               }
+            });
+          } else {
+            // Bezpečný fallback, pokud by změnili CSS třídy
+            // Najdeme všechny odkazy na profil a vyfiltrujeme je trochu nahrubo
+            const allProfileLinks = Array.from(document.querySelectorAll('a[href*="_f"]')).map(a => (a as HTMLAnchorElement).href);
+            return Array.from(new Set(allProfileLinks)).slice(0, 15);
+          }
+          
+          return Array.from(new Set(results)).slice(0, 15);
+        });
+
+        console.log(`Nalezeno ${links.length} potenciálních firem bez webu v ${currentCity}.`);
+
+        for (const link of links) {
+          console.log(`Zpracovávám profil: ${link}`);
+          await page.goto(link, { waitUntil: 'domcontentloaded' });
+          
+          // Zpoždění jako prevence bloku
+          await page.waitForTimeout(Math.floor(Math.random() * 2000) + 1500);
+
+          try {
+            const data = await page.evaluate(() => {
+              const companyName = document.querySelector('h1')?.innerText?.trim() || "";
+              
+              // E-mail (často v odkazu mailto:)
+              const emailEl = document.querySelector('a[href^="mailto:"]');
+              let email = emailEl ? (emailEl as HTMLAnchorElement).href.replace('mailto:', '').trim() : null;
+              
+              // Fallback pro e-mail textově
+              if (!email) {
+                const emailMatch = document.body.innerText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+                if (emailMatch) email = emailMatch[0].toLowerCase();
+              }
+
+              // Telefon (často v odkazu tel:)
+              const phoneEl = document.querySelector('a[href^="tel:"]');
+              let phone = phoneEl ? (phoneEl as HTMLAnchorElement).href.replace('tel:', '').trim() : null;
+              
+              if (!phone) {
+                 const phoneMatch = document.body.innerText.match(/(?:\+420)? ?[1-9][0-9]{2} ?[0-9]{3} ?[0-9]{3}/);
+                 if (phoneMatch) phone = phoneMatch[0].replace(/\s+/g, '');
+              }
+
+              // Město se většinou nachází v adrese, zkusíme najít aspoň ulici
+              const address = document.querySelector('.address, [itemprop="address"], .contact-address')?.innerText?.trim() || "";
+
+              // Ještě jednou ověříme, že tu není odkaz na web
+              const webLinks = Array.from(document.querySelectorAll('a')).map(a => a.href).filter(h => h.startsWith('http') && !h.includes('zivefirmy.cz'));
+              const hasWeb = webLinks.length > 0;
+
+              return { companyName, email, phone, address, hasWeb };
+            });
+
+            // Přísný filtr: Zajímá nás jen firma, která nemá web a má e-mail!
+            if (!data.hasWeb && data.companyName && data.phone && data.email) {
+              try {
+                await prisma.lead.upsert({
+                  where: { phone: data.phone },
+                  update: {
+                    companyName: data.companyName,
+                    category: currentCategory,
+                    city: currentCity,
+                    userId: session.user.id,
+                    address: data.address || undefined,
+                    email: data.email, // Máme jistotu e-mailu
+                  },
+                  create: {
+                    companyName: data.companyName,
+                    phone: data.phone,
+                    category: currentCategory,
+                    city: currentCity,
+                    userId: session.user.id,
+                    address: data.address || null,
+                    email: data.email,
+                  }
+                });
+
+                await prisma.user.update({
+                  where: { id: session.user.id },
+                  data: { credits: { decrement: 1 } }
+                });
+                totalAddedCount++;
+                console.log(`✅ Úspěšně uloženo: ${data.companyName} (${data.email})`);
+              } catch (error) {
+                console.error(`Chyba zápisu pro [${data.companyName}]:`, error);
+              }
+            } else {
+               console.log(`❌ Přeskočeno (Chybí e-mail nebo má web): ${data.companyName}`);
             }
           } catch (err) {
             console.error("Chyba při scrapování detailu:", err);
@@ -174,7 +182,7 @@ export async function POST(req: Request) {
 
     await browser.close();
 
-    return NextResponse.json({ success: true, addedCount: totalAddedCount, message: `Scraping dokončen. Získáno ${totalAddedCount} leadů.` });
+    return NextResponse.json({ success: true, addedCount: totalAddedCount, message: `Scraping zivefirmy.cz dokončen. Získáno ${totalAddedCount} kvalitních leadů s e-mailem.` });
   } catch (error: any) {
     console.error("Scrape Error:", error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
