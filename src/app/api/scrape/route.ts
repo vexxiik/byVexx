@@ -46,21 +46,39 @@ export async function POST(req: Request) {
       for (const currentCategory of categoriesToScrape) {
         console.log(`Zahajuji těžbu na zivefirmy.cz: ${currentCategory} v ${currentCity}`);
 
-        const url = `https://www.zivefirmy.cz/vyhledavani?q=${encodeURIComponent(currentCategory)}&loc=${encodeURIComponent(currentCity)}`;
-        await page.goto(url, { waitUntil: 'domcontentloaded' });
-        
-        // Náhodná pauza pro simulaci lidského chování (1-3 sekundy)
+        await page.goto('https://www.zivefirmy.cz/', { waitUntil: 'domcontentloaded' });
         await page.waitForTimeout(Math.floor(Math.random() * 2000) + 1000);
 
         try {
           const acceptButton = page.locator('text="Souhlasím"');
           if (await acceptButton.count() > 0) {
             await acceptButton.first().click({ timeout: 2000 });
-            await page.waitForTimeout(1000);
+            await page.waitForTimeout(500);
           }
         } catch (e) {
           // Ignorovat
         }
+
+        // Simulace uživatele: Vyplnění oboru přes Select2
+        await page.locator('#select2-q-container').click();
+        await page.waitForTimeout(500);
+        await page.locator('input.select2-search__field').last().fill(currentCategory);
+        await page.waitForTimeout(1000);
+        await page.keyboard.press('Enter');
+
+        // Simulace uživatele: Vyplnění lokace přes Select2
+        await page.locator('#select2-location-container').click();
+        await page.waitForTimeout(500);
+        await page.locator('input.select2-search__field').last().fill(currentCity);
+        await page.waitForTimeout(1500); // Čekáme na AJAX načtení IDčka
+        await page.keyboard.press('Enter');
+
+        // Odeslání formuláře
+        await Promise.all([
+          page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+          page.locator('button.btn-search').click()
+        ]);
+        await page.waitForTimeout(1000);
 
         // Získání odkazů na firmy
         const links = await page.evaluate(() => {
@@ -106,7 +124,7 @@ export async function POST(req: Request) {
 
           try {
             const data = await page.evaluate(() => {
-              const companyName = document.querySelector('h1')?.innerText?.trim() || "";
+              const companyName = (document.querySelector('h1') as HTMLElement)?.innerText?.trim() || "";
               
               // E-mail (často v odkazu mailto:)
               const emailEl = document.querySelector('a[href^="mailto:"]');
@@ -128,7 +146,8 @@ export async function POST(req: Request) {
               }
 
               // Město se většinou nachází v adrese, zkusíme najít aspoň ulici
-              const address = document.querySelector('.address, [itemprop="address"], .contact-address')?.innerText?.trim() || "";
+              const addressEl = document.querySelector('.address, [itemprop="address"], .contact-address');
+              const address = (addressEl as HTMLElement)?.innerText?.trim() || "";
 
               // Ještě jednou ověříme, že tu není odkaz na web
               const webLinks = Array.from(document.querySelectorAll('a')).map(a => a.href).filter(h => h.startsWith('http') && !h.includes('zivefirmy.cz'));
