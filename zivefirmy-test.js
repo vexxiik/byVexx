@@ -15,30 +15,26 @@ const fs = require('fs');
     }
   } catch (e) {}
 
-  console.log("Filling category...");
   await page.locator('#select2-q-container').click();
   await page.waitForTimeout(500);
   await page.locator('input.select2-search__field').last().fill('Instalatér');
   await page.waitForTimeout(1000);
   await page.keyboard.press('Enter');
 
-  console.log("Filling location...");
   await page.locator('#select2-location-container').click();
   await page.waitForTimeout(500);
   await page.locator('input.select2-search__field').last().fill('Pardubice');
-  await page.waitForTimeout(1500); // wait for ajax
+  await page.waitForTimeout(1500);
   await page.keyboard.press('Enter');
 
-  console.log("Submitting...");
   await Promise.all([
     page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
     page.locator('button.btn-search').click()
   ]);
 
-  console.log("Result URL:", page.url());
   const html = await page.content();
-  const found = html.includes('Instalater') || html.includes('company-item');
-  console.log("Found companies:", found);
+  fs.writeFileSync('zivefirmy_results.html', html);
+  console.log("Saved zivefirmy_results.html");
   
   await browser.close();
 })();
