@@ -431,11 +431,16 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
                       />
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-col gap-1">
                         <button onClick={() => openDrawer(lead)} className="font-medium text-gray-900 hover:text-blue-600 hover:underline transition-colors text-left line-clamp-1">
                           {lead.companyName}
                         </button>
-                        {lead.email && <span title={`E-mail: ${lead.email}`}><Mail className="size-4 text-blue-500 flex-shrink-0" /></span>}
+                        {lead.email && (
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                            <Mail className="size-3.5 flex-shrink-0" />
+                            {lead.email}
+                          </div>
+                        )}
                       </div>
                       {lead.notes && <div className="text-xs text-gray-400 mt-1 line-clamp-1">{lead.notes}</div>}
                     </td>
