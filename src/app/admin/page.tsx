@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import LeadTable from "@/components/admin/LeadTable";
-import { auth } from "@/auth";
+import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
+import { LogOut } from "lucide-react";
 import CreditsBadge from "@/components/admin/CreditsBadge";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +36,20 @@ export default async function AdminPage() {
               <p className="text-gray-500 mt-1">Automatická správa a těžba leadů</p>
             </div>
             <CreditsBadge credits={user?.credits ?? 0} />
+          </div>
+          <div className="flex items-center">
+            <form action={async () => {
+              "use server";
+              await signOut({ redirectTo: "/login" });
+            }}>
+              <button
+                type="submit"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm"
+              >
+                <LogOut className="size-4" />
+                Odhlásit se
+              </button>
+            </form>
           </div>
         </header>
 
