@@ -170,16 +170,9 @@ export async function POST(req: Request) {
                 const addressEl = document.querySelector('.address, [itemprop="address"], .contact-address');
                 const address = (addressEl as HTMLElement)?.innerText?.trim() || "";
 
-                const webLinks = Array.from(document.querySelectorAll('a')).map(a => a.href).filter(h => h.startsWith('http') && !h.includes('zivefirmy.cz'));
-                const hasWeb = webLinks.length > 0;
-
-                return { companyName, email, phone, address, hasWeb };
+                return { companyName, email, phone, address };
               });
 
-              if (data.hasWeb) {
-                console.log(`[SCRAPER] ❌ Přeskakuji. Firma nakonec má web (skryto v detailu).`);
-                continue;
-              }
               if (!data.companyName) {
                 console.log(`[SCRAPER] ❌ Přeskakuji. Nenašel jsem název firmy.`);
                 continue;
