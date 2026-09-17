@@ -9,6 +9,7 @@ import { Drawer } from "vaul";
 import { deleteLeadsAction, bulkUpdateStatusAction, updateLeadStatusAction, updateLeadNotesAction, addLeadAction, updateSmsTemplateAction, deleteAllLeadsAction } from "@/app/actions/leads";
 import { generateAndSendEmail } from "@/app/actions/campaigns";
 import KanbanBoard from "./KanbanBoard";
+import ScraperTerminal from "./ScraperTerminal";
 import { LayoutGrid, List, Plus, Settings, Phone as PhoneIcon, MessageCircle, Link2, Eye, ExternalLink, Zap, Mail, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -23,6 +24,10 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
   const [scrapeCategory, setScrapeCategory] = useState("Instalatér");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isPending, startTransition] = useTransition();
+
+  // Terminal state
+  const [scraperLogs, setScraperLogs] = useState<string[]>([]);
+  const [isScrapingTerminal, setIsScrapingTerminal] = useState(false);
 
   // Campaign State
   const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
@@ -61,24 +66,55 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
 
   const handleScrape = async () => {
     setIsLoading(true);
-    toast.loading("Zahajuji těžbu, může to chvíli trvat...");
+    setIsScrapingTerminal(true);
+    setScraperLogs([]); // Clear logs before starting
+    toast.loading("Zahajuji těžbu, sledujte terminál...");
+    
     try {
       const res = await fetch("/api/scrape", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ city: scrapeCity, category: scrapeCategory }),
       });
-      const data = await res.json();
-      if (data.success) {
-        toast.success(data.message);
-        window.location.reload();
-      } else {
-        toast.error("Chyba: " + data.error);
+      
+      if (!res.ok) {
+        toast.error("Chyba při spuštění scraperu.");
+        setIsLoading(false);
+        setIsScrapingTerminal(false);
+        return;
       }
+
+      if (!res.body) {
+        toast.error("Stream není k dispozici.");
+        setIsLoading(false);
+        setIsScrapingTerminal(false);
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+
+      let done = false;
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        
+        if (value) {
+          const chunk = decoder.decode(value, { stream: !done });
+          const lines = chunk.split("\n").filter(l => l.trim().length > 0);
+          
+          setScraperLogs(prev => [...prev, ...lines]);
+        }
+      }
+      
+      toast.success("Těžba úspěšně dokončena!");
+      setTimeout(() => window.location.reload(), 2000); // Reload after 2 seconds to show new leads
+
     } catch (err) {
       toast.error("Chyba při komunikaci se serverem.");
     } finally {
       setIsLoading(false);
+      setIsScrapingTerminal(false);
     }
   };
 
@@ -378,8 +414,10 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
         </div>
       </div>
 
-      {/* Zobrazení */}
-      {view === "kanban" ? (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          {/* Zobrazení */}
+          {view === "kanban" ? (
         <KanbanBoard 
           leads={leads} 
           updateStatus={updateStatus} 
@@ -498,9 +536,16 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
               </AnimatePresence>
             </tbody>
           </table>
+          </div>
+        </div>
+        )}
+        </div>
+        
+        {/* Terminal Section */}
+        <div className="lg:col-span-1 h-[600px] lg:h-auto">
+          <ScraperTerminal logs={scraperLogs} isScraping={isScrapingTerminal} />
         </div>
       </div>
-      )}
 
       {/* Floating Action Bar */}
       <AnimatePresence>
@@ -575,7 +620,7 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
 
                 <div className="bg-gray-50 rounded-xl p-4 mb-8 flex flex-col gap-3 border border-gray-100">
                   <button 
-                    onClick={() => copyToClipboard(`${window.location.origin}/pitch/${selectedLead?.id}`, "Odkaz na nabídku")}
+                    onClick={() => copyToClipboard(`${window.location.origin}/navrh/${selectedLead?.id}`, "Odkaz na nabídku")}
                     className="flex items-center justify-center gap-2 w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2.5 rounded-lg font-medium transition-colors"
                   >
                     <Link2 className="size-4" />
