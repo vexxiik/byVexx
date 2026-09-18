@@ -155,21 +155,21 @@ export async function POST(req: Request) {
                   detailUrls = [...detailUrls, ...urlsOnPage];
                   sendLog(`[SCRAPER] Nalezeno kandidátů na straně ${pageNumber}: ${urlsOnPage.length} (Celkem: ${detailUrls.length})`);
 
-                  const nextButton = page.locator('a.next, a:has-text("Další")').first();
-                  if (await nextButton.count() > 0) {
-                    const href = await nextButton.getAttribute('href');
-                    if (href && href !== '#') {
-                       sendLog(`[SCRAPER] Přecházím na další stránku...`);
-                       await Promise.all([
-                         page.waitForNavigation({ waitUntil: 'networkidle' }).catch(() => null),
-                         nextButton.click({ force: true })
-                       ]);
+                  const nextHref = await page.evaluate(() => {
+                     let next = document.querySelector('a.next, a[title*="Další"]');
+                     if (!next) {
+                         const allLinks = Array.from(document.querySelectorAll('a'));
+                         next = allLinks.find(a => a.textContent?.includes('Další')) || null;
+                     }
+                     return next ? (next as HTMLAnchorElement).href : null;
+                  });
+
+                  if (nextHref && !nextHref.includes('javascript:') && nextHref !== '#') {
+                       sendLog(`[SCRAPER] Nalezena další stránka. Přecházím...`);
+                       await page.goto(nextHref, { waitUntil: 'domcontentloaded' });
                        pageNumber++;
-                    } else {
-                       hasNextPage = false;
-                    }
                   } else {
-                    hasNextPage = false;
+                       hasNextPage = false;
                   }
                 }
 
@@ -213,11 +213,22 @@ export async function POST(req: Request) {
                       const address = (addressEl as HTMLElement)?.innerText?.trim() || "";
 
                       // Striktní kontrola webu na detailu
-                      const webEls = Array.from(document.querySelectorAll('a[href^="http"]')) as HTMLAnchorElement[];
-                      const hasWeb = webEls.some(a => {
-                         const h = a.href || '';
-                         return !h.includes('zivefirmy.cz') && !h.includes('facebook.com') && !h.includes('mapy.cz');
-                      });
+                      let hasWeb = false;
+                      const webWrapper = document.querySelector('.web, .www, .detail-web, .company-web');
+                      if (webWrapper) {
+                          const link = webWrapper.querySelector('a');
+                          if (link && !link.href.includes('zivefirmy.cz')) hasWeb = true;
+                      }
+
+                      if (!hasWeb) {
+                          // Fallback: hledání nadpisu "WEBOVÉ PREZENTACE"
+                          const h3s = Array.from(document.querySelectorAll('h3, h4, div'));
+                          const webHeader = h3s.find(el => el.textContent?.toUpperCase().includes('WEBOVÉ PREZENTACE'));
+                          if (webHeader && webHeader.nextElementSibling) {
+                              const link = webHeader.nextElementSibling.querySelector('a');
+                              if (link && !link.href.includes('zivefirmy.cz')) hasWeb = true;
+                          }
+                      }
 
                       return { companyName, email, phone, address, hasWeb };
                     });
