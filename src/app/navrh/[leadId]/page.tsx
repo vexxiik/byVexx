@@ -13,9 +13,26 @@ import {
 
 export default async function PitchPage({ params }: { params: Promise<{ leadId: string }> }) {
   const resolvedParams = await params;
-  const lead = await prisma.lead.findUnique({ where: { id: resolvedParams.leadId } });
+  let lead = await prisma.lead.findUnique({ where: { id: resolvedParams.leadId } });
   
-  if (!lead) return notFound();
+  if (!lead) {
+    // Fallback: Pokus o vyhledání podle slugu firmy (kvůli plain-text emailům)
+    const recentLeads = await prisma.lead.findMany({
+      take: 2000,
+      orderBy: { createdAt: 'desc' }
+    });
+    
+    const match = recentLeads.find(l => {
+      const slug = l.companyName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      return slug === resolvedParams.leadId;
+    });
+    
+    if (match) {
+      lead = match;
+    } else {
+      return notFound();
+    }
+  }
 
   return (
     <div className="min-h-[100dvh] bg-white text-zinc-900 font-sans selection:bg-blue-500/20 relative">

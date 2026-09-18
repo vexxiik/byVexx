@@ -53,7 +53,9 @@ Jmenuji se Jakub Sokol a zakládám digitální agenturu Vexx. Abych rychle vybu
 
 Háček je jediný – až vám web začne generovat zakázky, chtěl bych vás použít jako referenci.
 
-Abych ukázal, že to myslím vážně, rovnou jsem pro vás zpracoval návrh vašeho budoucího webu: ${pitchUrl} Zkuste si ho rozkliknout, ať vidíte, o čem mluvím.
+Abych ukázal, že to myslím vážně, rovnou jsem pro vás zpracoval návrh vašeho budoucího webu: https://${displayUrl}
+
+Zkuste si ho rozkliknout, ať vidíte, o čem mluvím.
 
 Pokud vám to dává smysl, stačí odepsat a probereme detaily.
 
