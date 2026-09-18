@@ -155,19 +155,41 @@ export async function POST(req: Request) {
                   detailUrls = [...detailUrls, ...urlsOnPage];
                   sendLog(`[SCRAPER] Nalezeno kandidátů na straně ${pageNumber}: ${urlsOnPage.length} (Celkem: ${detailUrls.length})`);
 
+                  const activePageStr = await page.evaluate(() => {
+                      const active = document.querySelector('ul.pagination li.active a');
+                      return active ? active.textContent : "1";
+                  });
+                  
+                  const activePage = parseInt(activePageStr || "1");
+                  if (activePage < pageNumber) {
+                      sendLog(`[SCRAPER] Detekován konec výsledků (Zivefirmy vrátily stranu ${activePage} místo ${pageNumber}). Ukončuji stránkování.`);
+                      hasNextPage = false;
+                      continue; // Break the while loop by skipping to next iteration which will fail hasNextPage
+                  }
+
                   const nextHref = await page.evaluate(() => {
                      const pagination = document.querySelector('ul.pagination');
                      if (!pagination) return null;
                      
-                     // Find the link with the "»" (next page) arrow
-                     const nextLink = Array.from(pagination.querySelectorAll('a')).find(a => a.textContent?.includes('»'));
+                     // Find the link with the "»" (next page) arrow that is actually visible
+                     const nextLink = Array.from(pagination.querySelectorAll('a')).find(a => {
+                         const htmlA = a as HTMLElement;
+                         const isVisible = htmlA.offsetParent !== null && window.getComputedStyle(htmlA).display !== 'none' && window.getComputedStyle(htmlA.parentElement!).display !== 'none';
+                         return htmlA.textContent?.includes('»') && isVisible;
+                     });
+                     
                      if (nextLink && !nextLink.parentElement?.classList.contains('disabled')) {
                          return nextLink.href;
                      }
                      
                      // Fallback to li.next a
                      const liNext = pagination.querySelector('li.next:not(.disabled) a');
-                     return liNext ? (liNext as HTMLAnchorElement).href : null;
+                     if (liNext) {
+                         const htmlLiNext = liNext as HTMLElement;
+                         const isVisible = htmlLiNext.offsetParent !== null && window.getComputedStyle(htmlLiNext).display !== 'none';
+                         return isVisible ? (liNext as HTMLAnchorElement).href : null;
+                     }
+                     return null;
                   });
 
                   if (nextHref && !nextHref.includes('javascript:') && nextHref !== '#') {
