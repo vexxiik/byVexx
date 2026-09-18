@@ -40,79 +40,45 @@ export async function generateAndSendEmail(leadId: string, isDryRun: boolean = t
     }
 
     const pitchUrl = `https://vexx.cz/navrh/${lead.id}`;
+    const companySlug = lead.companyName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    const displayUrl = `vexx.cz/navrh/${companySlug}`;
 
-    let copywritingSkill = "";
-    let mktEmailSkill = "";
-    try {
-      copywritingSkill = fs.readFileSync(path.join(process.cwd(), "public", "copywriting", "SKILL.md"), "utf-8");
-      mktEmailSkill = fs.readFileSync(path.join(process.cwd(), "public", "mkt-email-sequence", "SKILL.md"), "utf-8");
-    } catch (e) {
-      console.warn("Could not load SKILL.md files", e);
-    }
+    const subject = `Zvýšení online viditelnosti pro ${lead.category} v lokalitě ${lead.city}`;
     
-    // Generate email content with AI
-    const systemPrompt = `Vygeneruj POUZE 2 personalizované věty pro firmu ${lead.companyName} (obor: ${lead.category}, město: ${lead.city}). 
-ZÁSADNÍ PRAVIDLO PRO OSLOVENÍ: E-mail MUSÍ začínat vždy pouze slovy "Dobrý den,". Nikdy nevkládej název firmy přímo do oslovení (žádné "Dobrý den, Topení David Havlas").
-Název firmy, obor a město zmiň zcela přirozeně až uvnitř první a druhé věty (např. 'Narazil jsem na vaši firmu X a zaujaly mě vaše služby v oblasti Y v lokalitě Z.'). 
-Druhá věta musí jemně naznačit problém (např. 'Všiml jsem si ale, že váš potenciál na internetu brzdí chybějící nebo zastaralý web.'). 
-NIKDY neskloňuj název firmy. Nevytvářej žádný další text, generuj striktně pouze tyto 2 věty.`;
+    const fullText = `Dobrý den,
 
-    const { object: emailData } = await generateObject({
-      model: groq("openai/gpt-oss-120b"),
-      schema: z.object({
-        subject: z.string().describe("Úderný předmět e-mailu pro maximální open-rate"),
-        hook: z.string().describe("2 personalizované věty (B2B oslovení a naznačení problému)"),
-      }),
-      prompt: systemPrompt,
-    });
+narazil jsem na vaši firmu ${lead.companyName} a všiml si, že nemáte ideálně vyřešený web. Každý měsíc tak pravděpodobně přicházíte o zakázky z Googlu na úkor konkurence.
 
-    const fullText = `${emailData.hook}
+Jmenuji se Jakub Sokol a zakládám digitální agenturu Vexx. Abych rychle vybudoval exkluzivní portfolio, hledám nyní první 3 klienty, kterým vytvořím prémiový web za zlomek běžné ceny (za 7 500 Kč místo běžných 35 000 Kč).
 
-Jmenuji se Jakub Sokol a založil jsem webovou agenturu Vexx. Mým cílem je pomáhat poctivým firmám k tomu, aby na internetu působily přesně tak spolehlivě a profesionálně, jak reálně pracují.
+Háček je jediný – až vám web začne generovat zakázky, chtěl bych vás použít jako referenci.
 
-Protože Vexx teprve spouštím a potřebuji vybudovat exkluzivní portfolio, hledám pouze první 3 klienty pro dlouhodobou spolupráci. Rozhodl jsem se vás proto oslovit s nabídkou, kterou vám žádná jiná agentura na trhu nedá.
+Abych ukázal, že to myslím vážně, rovnou jsem pro vás zpracoval návrh vašeho budoucího webu: ${pitchUrl} Zkuste si ho rozkliknout, ať vidíte, o čem mluvím.
 
-Vytvoříme vám kompletní, moderní a rychlý web za bezkonkurenční, zlomkovou cenu. Získáte nejen luxusní vizitku, ale především technologické řešení, které za vás bude stabilně generovat poptávky.
+Pokud vám to dává smysl, stačí odepsat a probereme detaily.
 
-Kde je háček?
-Žádný není. Tato extrémně nízká cena existuje pouze proto, že se jedná o striktně limitovanou zaváděcí akci. Mám jedinou podmínku – po spuštění webu bych váš projekt rád využil jako referenční případovou studii na svém portfoliu. Vy získáte prémiové řešení s minimální investicí, já silnou referenci pro další růst. Je to naprosto férový obchod.
-
-Abych vám ukázal, že to s vámi myslím vážně, rovnou jsem pro vás připravil konkrétní řešení na míru.
-
-Zobrazit vaše technologické řešení: ${pitchUrl}
-
-Tento e-mail jsem napsal přímo pro vás, nejedná se o žádný automatický spam a odkaz je 100% bezpečný. Pokud pro vás nabídka aktuálně nedává smysl, stačí e-mail ignorovat. 
-
-S přátelským pozdravem,
-Jakub Sokol
-Zakladatel Vexx.`;
+Jakub Sokol, Zakladatel Vexx.`;
 
     const fullHtml = `
-<div style="background-color: #FAFAFA; padding: 40px 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #eaeaea; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-    <div style="padding: 30px; text-align: center; border-bottom: 1px solid #eaeaea;">
-      <h1 style="margin: 0; color: #000000; font-weight: bold; font-size: 24px; letter-spacing: -0.5px;"><span style="color: #000000 !important; text-decoration: none;">Vexx.</span></h1>
-    </div>
-    <div style="padding: 40px 30px; color: #333333; font-size: 16px; line-height: 1.6;">
-      <p>${emailData.hook}</p>
-      
-      <p>Jmenuji se Jakub Sokol a založil jsem webovou agenturu <strong>Vexx</strong>. Mým cílem je pomáhat poctivým firmám k tomu, aby na internetu působily přesně tak spolehlivě a profesionálně, jak reálně pracují.</p>
-      
-      <p>Protože Vexx teprve spouštím a potřebuji vybudovat exkluzivní portfolio, hledám <strong>pouze první 3 klienty</strong> pro dlouhodobou spolupráci. Rozhodl jsem se vás proto oslovit s nabídkou, kterou vám žádná jiná agentura na trhu nedá.</p>
-      
-      <p><strong>Co získáte?</strong><br>Vytvoříme vám kompletní, moderní a rychlý web za <strong>bezkonkurenční, zlomkovou cenu</strong>. Získáte nejen luxusní vizitku, ale především technologické řešení, které za vás bude stabilně generovat poptávky.</p>
-      
-      <p><strong>Kde je háček?</strong><br>Žádný není. Tato extrémně nízká cena existuje POUZE PROTO, že se jedná o striktně limitovanou zaváděcí akci. Mám jedinou podmínku – po úspěšném spuštění webu bych váš projekt rád využil jako referenční <em>případovou studii</em> na svém portfoliu. Vy získáte prémiové řešení s minimální investicí, já silnou referenci pro další růst. Fér obchod.</p>
-      
-      <p>Abych vám ukázal, že to s vámi myslím vážně, rovnou jsem pro vás připravil konkrétní <strong>řešení na míru</strong>.</p>
-    </div>
-    <div style="padding: 30px; text-align: center; background-color: #fcfcfc; border-top: 1px solid #eaeaea;">
-      <a href="${pitchUrl}" style="display: inline-block; background: #18181b; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">Zobrazit vaše technologické řešení</a>
-      
-      <p style="font-size: 13px; color: #666; margin-top: 30px; text-align: left; line-height: 1.5;">Tento e-mail jsem napsal přímo pro vás, nejedná se o žádný automatický spam a odkaz je 100% bezpečný. Pokud pro vás nabídka aktuálně nedává smysl, stačí tento e-mail ignorovat.</p>
-      
-      <p style="font-size: 13px; color: #666; margin-bottom: 0; text-align: left; line-height: 1.5;">S přátelským pozdravem,<br><strong style="color: #333;">Jakub Sokol</strong><br>Zakladatel Vexx.</p>
-    </div>
+<div style="background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #111111; font-size: 15px; line-height: 1.5; text-align: left;">
+  <p style="margin: 0 0 1em 0;">Dobrý den,</p>
+  
+  <p style="margin: 0 0 1em 0;">narazil jsem na vaši firmu ${lead.companyName} a všiml si, že nemáte ideálně vyřešený web. Každý měsíc tak pravděpodobně přicházíte o zakázky z Googlu na úkor konkurence.</p>
+  
+  <p style="margin: 0 0 1em 0;">Jmenuji se Jakub Sokol a zakládám digitální agenturu Vexx. Abych rychle vybudoval exkluzivní portfolio, hledám nyní první 3 klienty, kterým vytvořím prémiový web za zlomek běžné ceny (za 7&nbsp;500&nbsp;Kč místo běžných 35&nbsp;000&nbsp;Kč).</p>
+  
+  <p style="margin: 0 0 1em 0;">Háček je jediný – až vám web začne generovat zakázky, chtěl bych vás použít jako referenci.</p>
+  
+  <p style="margin: 0 0 1em 0;">Abych ukázal, že to myslím vážně, rovnou jsem pro vás zpracoval návrh vašeho budoucího webu: <a href="${pitchUrl}" style="color: #0056b3; text-decoration: underline;">${displayUrl}</a>. Zkuste si ho rozkliknout, ať vidíte, o čem mluvím.</p>
+  
+  <p style="margin: 0 0 1em 0;">Pokud vám to dává smysl, stačí odepsat a probereme detaily.</p>
+  
+  <p style="margin: 0;">
+    Jakub Sokol,<br>
+    Zakladatel Vexx.
+  </p>
+  <div style="opacity: 0; height: 0; width: 0; overflow: hidden; font-size: 0px; color: transparent; line-height: 0;">
+    anti-trim-${Date.now()}-${Math.random().toString(36).substring(2, 9)}
   </div>
 </div>`;
 
@@ -123,7 +89,7 @@ Zakladatel Vexx.`;
       const { data, error } = await resend.emails.send({
         from: "Jakub z Vexx <jakub@vexx.cz>",
         to: [lead.email],
-        subject: emailData.subject,
+        subject: subject,
         text: fullText,
         html: fullHtml,
       });
@@ -139,11 +105,11 @@ Zakladatel Vexx.`;
       where: { id: lead.id },
       data: { 
         lastEmailedAt: new Date(),
-        lastEmailBody: isDryRun ? `[TEST - NEODESLÁNO]\nPředmět: ${emailData.subject}\n\n${fullText}` : `Předmět: ${emailData.subject}\n\n${fullText}`
+        lastEmailBody: isDryRun ? `[TEST - NEODESLÁNO]\nPředmět: ${subject}\n\n${fullText}` : `Předmět: ${subject}\n\n${fullText}`
       }
     });
 
-    return { success: true, message: isDryRun ? "Vygenerováno (Test)" : "E-mail úspěšně odeslán.", body: isDryRun ? `[TEST - NEODESLÁNO]\nPředmět: ${emailData.subject}\n\n${fullText}` : `Předmět: ${emailData.subject}\n\n${fullText}` };
+    return { success: true, message: isDryRun ? "Vygenerováno (Test)" : "E-mail úspěšně odeslán.", body: isDryRun ? `[TEST - NEODESLÁNO]\nPředmět: ${subject}\n\n${fullText}` : `Předmět: ${subject}\n\n${fullText}` };
 
   } catch (error: any) {
     console.error("Email campaign error:", error);

@@ -332,13 +332,15 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
             </select>
           </div>
           <div className="flex-1 w-full">
-            <label className="block text-sm font-medium text-gray-600 mb-1">Město</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Lokalita (Kraj / Město)</label>
             <select 
               value={scrapeCity} 
               onChange={e => setScrapeCity(e.target.value)}
               className="w-full h-11 bg-gray-50 border border-gray-200 rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50"
             >
-              <option value="Všechny">Všechna města</option>
+              <option value="Všechny">Všechny lokality</option>
+              <option value="Pardubický kraj">Pardubický kraj</option>
+              <option value="Královéhradecký kraj">Královéhradecký kraj</option>
               <option value="Pardubice">Pardubice</option>
               <option value="Chrudim">Chrudim</option>
               <option value="Svitavy">Svitavy</option>
@@ -564,14 +566,18 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
             initial={{ y: 100, opacity: 0, x: "-50%" }}
             animate={{ y: 0, opacity: 1, x: "-50%" }}
             exit={{ y: 100, opacity: 0, x: "-50%" }}
-            className="fixed bottom-8 left-1/2 z-50 bg-[#111] text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-6 border border-white/10"
+            className="fixed bottom-4 sm:bottom-8 left-1/2 z-50 bg-[#111] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-[2rem] sm:rounded-full shadow-2xl flex items-center gap-3 sm:gap-6 border border-white/10 w-[92%] sm:w-auto max-w-full overflow-x-auto overflow-y-hidden"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            <span className="text-sm font-medium">Vybráno {selectedIds.size}</span>
-            <div className="w-px h-5 bg-white/20"></div>
+            <style jsx>{`
+              div::-webkit-scrollbar { display: none; }
+            `}</style>
+            <span className="text-xs sm:text-sm font-medium whitespace-nowrap shrink-0">Vybráno {selectedIds.size}</span>
+            <div className="w-px h-5 bg-white/20 shrink-0"></div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
               <select 
-                className="bg-transparent text-sm font-medium outline-none text-gray-300 hover:text-white cursor-pointer"
+                className="bg-transparent text-xs sm:text-sm font-medium outline-none text-gray-300 hover:text-white cursor-pointer"
                 onChange={(e) => {
                   if (e.target.value) {
                     handleBulkStatus(e.target.value);
@@ -586,15 +592,15 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
               </select>
               <button 
                 onClick={() => setIsCampaignModalOpen(true)}
-                className="text-amber-400 hover:text-amber-300 text-sm font-medium flex items-center gap-1.5 ml-4"
+                className="text-amber-400 hover:text-amber-300 text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-1.5 ml-2 sm:ml-4 whitespace-nowrap"
               >
-                <Zap className="size-4" /> AI Kampaň
+                <Zap className="size-3.5 sm:size-4" /> AI Kampaň
               </button>
               <button 
                 onClick={handleBulkDelete}
-                className="text-red-400 hover:text-red-300 text-sm font-medium flex items-center gap-1.5 ml-4"
+                className="text-red-400 hover:text-red-300 text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-1.5 ml-3 sm:ml-4 whitespace-nowrap pr-2 sm:pr-0"
               >
-                <Trash2 className="size-4" /> Smazat
+                <Trash2 className="size-3.5 sm:size-4" /> Smazat
               </button>
             </div>
           </m.div>
@@ -659,7 +665,7 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
                         value={drawerAddress} 
                         onChange={e => setDrawerAddress(e.target.value)}
                         placeholder="Např. Václavské náměstí 1"
-                        className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all"
+                        className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all"
                       />
                     </div>
                     <div>
@@ -669,7 +675,7 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
                         value={drawerCeo} 
                         onChange={e => setDrawerCeo(e.target.value)}
                         placeholder="Např. Jan Novák"
-                        className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all"
+                        className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all"
                       />
                     </div>
                   </div>
@@ -682,7 +688,7 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
                         value={drawerIco} 
                         onChange={e => setDrawerIco(e.target.value)}
                         placeholder="Např. 12345678"
-                        className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all"
+                        className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all"
                       />
                     </div>
                     <div>
@@ -693,7 +699,7 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
                           value={drawerEmail} 
                           onChange={e => setDrawerEmail(e.target.value)}
                           placeholder="Např. info@firma.cz"
-                          className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all"
+                          className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all"
                         />
                         <button 
                           onClick={handleInlineEmailSave}
@@ -712,7 +718,7 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
                       value={drawerNotes} 
                       onChange={e => setDrawerNotes(e.target.value)}
                       placeholder="Co jste se dozvěděli po zavolání?"
-                      className="w-full h-32 p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all resize-none"
+                      className="w-full h-32 p-4 bg-gray-50 border border-gray-200 rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all resize-none"
                     />
                   </div>
 

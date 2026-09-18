@@ -104,50 +104,77 @@ export async function POST(req: Request) {
                   page.locator('button.btn-search').click()
                 ]);
                 
-                sendLog(`[SCRAPER] Jsem na URL výsledků: ${page.url()}`);
-                await page.waitForTimeout(2000); // Jistota pro dorenderování DOMu
+                let detailUrls: string[] = [];
+                let hasNextPage = true;
+                let pageNumber = 1;
 
-                // Pokus o nalezení elementů na stránce
-                const hasAnyLinks = await page.locator('a[href*="_f"]').count();
-                sendLog(`[SCRAPER] Nalezeno surových _f odkazů na stránce: ${hasAnyLinks}`);
+                while (hasNextPage) {
+                  sendLog(`[SCRAPER] Načítám stránku výsledků ${pageNumber}...`);
+                  await page.waitForTimeout(2000); // Jistota pro dorenderování DOMu
 
-                sendLog(`[SCRAPER] Filtruji firmy (vyřazuji ty s vlastním webem)...`);
-                const detailUrls = await page.evaluate(() => {
-                  const results: string[] = [];
-                  const profileLinks = Array.from(document.querySelectorAll('a[href*="_f"]')) as HTMLAnchorElement[];
-                  
-                  profileLinks.forEach(link => {
-                     let parent = link.parentElement;
-                     let isCompanyBlock = false;
-                     let iterations = 0;
-                     
-                     while (parent && iterations < 5) {
-                       if (parent.className.includes('company') || parent.className.includes('firm') || parent.className.includes('item')) {
-                          isCompanyBlock = true;
-                          break;
-                       }
-                       parent = parent.parentElement;
-                       iterations++;
-                     }
+                  // Pokus o nalezení elementů na stránce
+                  const hasAnyLinks = await page.locator('a[href*="_f"]').count();
+                  sendLog(`[SCRAPER] Nalezeno surových _f odkazů na stránce: ${hasAnyLinks}`);
 
-                     const blockToSearch = isCompanyBlock ? parent : link.parentElement?.parentElement;
-                     
-                     if (blockToSearch) {
-                       const hasWeb = Array.from(blockToSearch.querySelectorAll('a')).some(a => {
-                          const h = a.href || '';
-                          return h.startsWith('http') && !h.includes('zivefirmy.cz') && !h.includes('facebook.com');
-                       });
+                  sendLog(`[SCRAPER] Filtruji firmy (vyřazuji ty s vlastním webem)...`);
+                  const urlsOnPage = await page.evaluate(() => {
+                    const results: string[] = [];
+                    const profileLinks = Array.from(document.querySelectorAll('a[href*="_f"]')) as HTMLAnchorElement[];
+                    
+                    profileLinks.forEach(link => {
+                       let parent = link.parentElement;
+                       let isCompanyBlock = false;
+                       let iterations = 0;
                        
-                       if (!hasWeb) {
-                         results.push(link.href);
+                       while (parent && iterations < 5) {
+                         if (parent.className.includes('company') || parent.className.includes('firm') || parent.className.includes('item')) {
+                            isCompanyBlock = true;
+                            break;
+                         }
+                         parent = parent.parentElement;
+                         iterations++;
                        }
-                     }
-                  });
-                  
-                  return Array.from(new Set(results)).slice(0, 15);
-                });
 
-                sendLog(`[SCRAPER] Získáno finálních kandidátů (bez webu): ${detailUrls.length}`);
+                       const blockToSearch = isCompanyBlock ? parent : link.parentElement?.parentElement;
+                       
+                       if (blockToSearch) {
+                         const hasWeb = Array.from(blockToSearch.querySelectorAll('a')).some(a => {
+                            const h = a.href || '';
+                            return h.startsWith('http') && !h.includes('zivefirmy.cz') && !h.includes('facebook.com');
+                         });
+                         
+                         if (!hasWeb) {
+                           results.push(link.href);
+                         }
+                       }
+                    });
+                    
+                    return Array.from(new Set(results));
+                  });
+
+                  detailUrls = [...detailUrls, ...urlsOnPage];
+                  sendLog(`[SCRAPER] Nalezeno kandidátů na straně ${pageNumber}: ${urlsOnPage.length} (Celkem: ${detailUrls.length})`);
+
+                  const nextButton = page.locator('a.next, a:has-text("Další")').first();
+                  if (await nextButton.count() > 0) {
+                    const href = await nextButton.getAttribute('href');
+                    if (href && href !== '#') {
+                       sendLog(`[SCRAPER] Přecházím na další stránku...`);
+                       await Promise.all([
+                         page.waitForNavigation({ waitUntil: 'networkidle' }).catch(() => null),
+                         nextButton.click({ force: true })
+                       ]);
+                       pageNumber++;
+                    } else {
+                       hasNextPage = false;
+                    }
+                  } else {
+                    hasNextPage = false;
+                  }
+                }
+
+                detailUrls = Array.from(new Set(detailUrls));
+                sendLog(`[SCRAPER] Získáno finálních kandidátů (bez webu, celkem ze všech stran): ${detailUrls.length}`);
 
                 if (detailUrls.length === 0) {
                   sendLog(`[SCRAPER] Žádné vhodné firmy nenalezeny, přeskakuji...`);
@@ -185,15 +212,30 @@ export async function POST(req: Request) {
                       const addressEl = document.querySelector('.address, [itemprop="address"], .contact-address');
                       const address = (addressEl as HTMLElement)?.innerText?.trim() || "";
 
-                      return { companyName, email, phone, address };
+                      // Striktní kontrola webu na detailu
+                      const webEls = Array.from(document.querySelectorAll('a[href^="http"]')) as HTMLAnchorElement[];
+                      const hasWeb = webEls.some(a => {
+                         const h = a.href || '';
+                         return !h.includes('zivefirmy.cz') && !h.includes('facebook.com') && !h.includes('mapy.cz');
+                      });
+
+                      return { companyName, email, phone, address, hasWeb };
                     });
 
                     if (!data.companyName) {
                       sendLog(`[SCRAPER] ❌ Přeskakuji. Nenašel jsem název firmy.`);
                       continue;
                     }
-                    if (!data.email || !data.phone) {
-                      sendLog(`[SCRAPER] ❌ Přeskakuji. Chybí kontakt (telefon: ${!!data.phone}, email: ${!!data.email}).`);
+                    if (!data.email) {
+                      sendLog(`[SCRAPER] ❌ Přeskakuji. Chybí e-mailová adresa, která je povinná pro oslovení.`);
+                      continue;
+                    }
+                    if (data.hasWeb) {
+                      sendLog(`[SCRAPER] ❌ Přeskakuji. Firma má uvedený web přímo v detailu profilu.`);
+                      continue;
+                    }
+                    if (!data.phone) {
+                      sendLog(`[SCRAPER] ❌ Přeskakuji. Chybí telefon, který je nezbytný pro uložení do databáze.`);
                       continue;
                     }
 
