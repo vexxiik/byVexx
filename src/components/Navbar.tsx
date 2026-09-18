@@ -38,7 +38,7 @@ export default function Navbar() {
       )}
     >
       {/* Logo */}
-      <Link
+      <a
         href="/"
         className={cn(
           "text-2xl font-bold tracking-tight text-[#171717] transition-all duration-700 flex-shrink-0",
@@ -46,7 +46,7 @@ export default function Navbar() {
         )}
       >
         Vexx<span className="text-[#3b82f6]">.</span>
-      </Link>
+      </a>
 
       {/* Nav Links */}
       <div
