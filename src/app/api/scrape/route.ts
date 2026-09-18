@@ -156,12 +156,18 @@ export async function POST(req: Request) {
                   sendLog(`[SCRAPER] Nalezeno kandidátů na straně ${pageNumber}: ${urlsOnPage.length} (Celkem: ${detailUrls.length})`);
 
                   const nextHref = await page.evaluate(() => {
-                     let next = document.querySelector('a.next, a[title*="Další"]');
-                     if (!next) {
-                         const allLinks = Array.from(document.querySelectorAll('a'));
-                         next = allLinks.find(a => a.textContent?.includes('Další')) || null;
+                     const pagination = document.querySelector('ul.pagination');
+                     if (!pagination) return null;
+                     
+                     // Find the link with the "»" (next page) arrow
+                     const nextLink = Array.from(pagination.querySelectorAll('a')).find(a => a.textContent?.includes('»'));
+                     if (nextLink && !nextLink.parentElement?.classList.contains('disabled')) {
+                         return nextLink.href;
                      }
-                     return next ? (next as HTMLAnchorElement).href : null;
+                     
+                     // Fallback to li.next a
+                     const liNext = pagination.querySelector('li.next:not(.disabled) a');
+                     return liNext ? (liNext as HTMLAnchorElement).href : null;
                   });
 
                   if (nextHref && !nextHref.includes('javascript:') && nextHref !== '#') {
