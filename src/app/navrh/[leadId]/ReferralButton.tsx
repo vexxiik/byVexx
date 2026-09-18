@@ -24,7 +24,7 @@ export default function ReferralButton({ leadId }: { leadId: string }) {
     <button
       onClick={handleClick}
       disabled={isPending}
-      className="group inline-flex items-center justify-center gap-2 h-12 px-8 rounded-full border border-zinc-200 bg-white text-zinc-600 text-sm font-medium hover:border-zinc-300 hover:text-zinc-900 transition-all duration-200 active:scale-[0.97] disabled:opacity-50"
+      className="group inline-flex items-center justify-center gap-2 h-12 px-8 rounded-full border border-zinc-200 bg-white text-zinc-900 text-sm font-medium hover:bg-zinc-100 hover:border-zinc-300 transition-all duration-200 active:scale-[0.97] disabled:opacity-50"
       style={{
         transitionTimingFunction: "cubic-bezier(0.23, 1, 0.32, 1)",
       }}

@@ -43,7 +43,7 @@ export default async function PitchPage({ params }: { params: Promise<{ leadId: 
       <BentoSection companyName={lead.companyName} city={lead.city} category={lead.category} />
 
       {/* 4. Godfather Offer */}
-      <GodfatherOffer phone={lead.phone} />
+      <GodfatherOffer phone="+420604256988" />
 
       {/* Divider */}
       <div className="max-w-4xl mx-auto px-6">
@@ -56,10 +56,10 @@ export default async function PitchPage({ params }: { params: Promise<{ leadId: 
       </div>
 
       {/* 6. Final CTA + Referral */}
-      <FinalCTA phone={lead.phone} leadId={lead.id} />
+      <FinalCTA phone="+420604256988" leadId={lead.id} />
 
       {/* Secondary CTA — Referral (portfolio) */}
-      <div className="pb-12 px-6 flex justify-center -mt-8">
+      <div className="relative z-10 pb-12 px-6 flex justify-center -mt-16">
         <ReferralButton leadId={lead.id} />
       </div>
 

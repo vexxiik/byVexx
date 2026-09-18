@@ -44,13 +44,13 @@ export default function About() {
 
       <div className="space-y-6 text-lg md:text-xl text-[#52525b] leading-relaxed">
         <p className="animate-item">
-          Jsem senior frontend engineer se specializací na tvorbu vysoce výkonných webových aplikací. Mým cílem není jen napsat funkční kód, ale doručit bezkonkurenční uživatelský zážitek s obsesí pro milisekundovou odezvu.
+          Jmenuji se Jakub Sokol. Webovým technologiím se intenzivně věnuji už přes 4 roky od střední školy a aktuálně prohlubuji své znalosti studiem na Univerzitě Pardubice (UPCE).
         </p>
         <p className="animate-item">
-          S více než 5 lety zkušeností jsem prošel od malých startupů až po komplexní B2B platformy. Věřím, že nejlepší aplikace jsou ty, kde se čistý kód prolíná s nádherným interaktivním designem.
+          Zkušenosti jsem sbíral od menších startupů, kde jsem se naučil to nejdůležitější: kód musí řešit reálný problém. Věřím, že nejlepší aplikace jsou ty, kde se čistý kód prolíná s nádherným interaktivním designem.
         </p>
         <p className="animate-item font-medium text-[#171717]">
-          Rychlost načítání není jen číslo – je to pro mě základní stavební kámen každého produktu.
+          Nestavím weby, které jen hezky vypadají. Stavím řešení, která vašemu byznysu reálně pomáhají růst.
         </p>
       </div>
     </section>

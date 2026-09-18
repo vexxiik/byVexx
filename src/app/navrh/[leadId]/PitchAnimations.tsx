@@ -168,9 +168,12 @@ export function HeroSection({
                 <div className="flex-1 bg-black p-2 md:p-3 relative">
                   {/* Screen content */}
                   <div className="w-full h-full bg-zinc-900 rounded-sm overflow-hidden relative">
-                    <img 
-                      src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=1000&auto=format&fit=crop" 
-                      alt="Web Design Placeholder" 
+                    <m.img 
+                      initial={{ opacity: 0, filter: "blur(2px)" }}
+                      animate={{ opacity: 1, filter: "blur(0px)" }}
+                      transition={{ duration: 0.7, ease: ease.out, delay: 0.3 }}
+                      src="/mockup-pc.webp" 
+                      alt="Desktop Web Mockup" 
                       className="absolute inset-0 w-full h-full object-cover object-top" 
                     />
                   </div>
@@ -186,11 +189,14 @@ export function HeroSection({
                 {/* Notch */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-3 bg-zinc-950 rounded-b-xl z-40" />
                 {/* Screen content */}
-                <div className="flex-1 relative bg-zinc-900">
-                  <img 
-                    src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=1000&auto=format&fit=crop" 
-                    alt="Mobile Web Design Placeholder" 
-                    className="absolute inset-0 w-full h-full object-cover object-left-top" 
+                <div className="flex-1 relative bg-zinc-900 overflow-hidden rounded-b-[1.75rem]">
+                  <m.img 
+                    initial={{ opacity: 0, filter: "blur(2px)" }}
+                    animate={{ opacity: 1, filter: "blur(0px)" }}
+                    transition={{ duration: 0.7, ease: ease.out, delay: 0.4 }}
+                    src="/mockup-mobile.webp" 
+                    alt="Mobile Web Mockup" 
+                    className="absolute inset-0 w-full h-full object-cover object-top" 
                   />
                 </div>
               </div>
@@ -567,7 +573,7 @@ export function GodfatherOffer({ phone }: { phone: string }) {
    SOCIAL PROOF STATS
 ───────────────────────────────────────────────────────────── */
 const stats = [
-  { value: 215, suffix: "%", prefix: "+", label: "Průměrný nárůst poptávek" },
+  { value: 63, suffix: "%", prefix: "+", label: "Průměrný nárůst poptávek" },
   { value: 0.8, suffix: "s", prefix: "< ", label: "Průměrná doba načtení" },
 ];
 

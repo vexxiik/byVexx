@@ -72,7 +72,7 @@ export default function ImpactBento() {
           whileInView="show"
           viewport={{ once: true, margin: "-50px" }}
           onViewportEnter={() => {
-            animate(count, 215, {
+            animate(count, 63, {
               duration: 2.5,
               ease: "easeOut",
             });
