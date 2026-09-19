@@ -34,21 +34,26 @@ export default function StickyCTA() {
     return null;
   }
 
+  const scrollToContact = (e: React.MouseEvent) => {
+    e.preventDefault();
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <div
       className={`fixed bottom-8 left-6 z-50 md:hidden transition-transform duration-500 ease-in-out ${
         isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'
       }`}
     >
-      <Link
-        href="#contact"
+      <button
+        onClick={scrollToContact}
         className="group relative flex items-center justify-center gap-2 h-14 px-8 rounded-full overflow-hidden transition-transform active:scale-95 bg-[#3b82f6] hover:bg-[#2563eb] shadow-[0_8px_30px_rgba(59,130,246,0.4)]"
       >
         <span className="relative z-10 text-sm tracking-wide text-white font-bold">
           Návrh zdarma
         </span>
         <ArrowRight className="relative z-10 w-4 h-4 text-white group-hover:translate-x-1 transition-transform duration-300" />
-      </Link>
+      </button>
     </div>
   );
 }

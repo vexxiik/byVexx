@@ -24,7 +24,7 @@ interface WelcomeEmailProps {
 const PROJECT_TYPE_LABELS: Record<string, string> = {
   'novy-web': 'Zbrusu nový web',
   'redesign': 'Redesign stávajícího webu',
-  'sprava': 'Jen správa nebo úpravy',
+  'sprava': 'Měsíční péče (Správa webu)',
 };
 
 const BUDGET_LABELS: Record<string, string> = {

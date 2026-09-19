@@ -2,13 +2,14 @@
 
 import React from "react";
 import { m } from "framer-motion";
+import Link from "next/link";
 
 const plans = [
   {
     name: "Vexx. Kompletní Web",
     desc: "Vše, co potřebujete pro dominanci na internetu. Od návrhu po spuštění.",
     features: [
-      "Vícestránková architektura (až 5 podstránek)",
+      "Vícestránková architektura (hlavní stránka + až 2 podstránky)",
       "Vysoce konverzní prémiový design",
       "Next.js & Framer Motion interakce",
       "Psychologický copywriting",
@@ -21,10 +22,10 @@ const plans = [
     name: "Vexx. Essential Care",
     desc: "Základní technická údržba. Vy se staráte o byznys, já o váš web.",
     features: [
-      "Rychlý a bezpečný Vercel hosting",
-      "Správa a obnova domény",
-      "Průběžný technický dohled a aktualizace",
-      "Drobné úpravy textů a fotek",
+      "Prémiový a bezpečný cloud hosting",
+      "Správa a obnova vaší domény",
+      "Průběžný technický dohled a bezpečnostní updaty",
+      "Drobné textové úpravy v průběhu roku (změna ceníku, otevírací doby)",
     ],
     price: "Správa od 500 Kč / měsíc",
     highlight: true,
@@ -34,10 +35,10 @@ const plans = [
     desc: "Aktivní práce na vašem růstu. Pro firmy, které chtějí neustále maximalizovat zisk.",
     features: [
       "Vše z balíčku Essential Care",
-      "Prioritní technická podpora (24/7)",
-      "Pokročilá Vercel analytika a reporty",
-      "Průběžná optimalizace rychlosti a A/B testování",
-      "Rozšířené úpravy obsahu a architektury",
+      "Prioritní technická podpora a konzultace",
+      "Pravidelné přidávání vašich nových realizací/fotek",
+      "Správa a aktualizace Google Firemního profilu (Mapy)",
+      "Detailní měsíční reporty o návštěvnosti",
     ],
     price: "Správa od 1 500 Kč / měsíc",
     highlight: false,
@@ -77,7 +78,8 @@ export default function Pricing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.7, delay: idx * 0.15, ease: [0.21, 0.47, 0.32, 0.98] }}
-              className={`relative flex flex-col bg-white rounded-[2rem] p-8 lg:p-10 shadow-[0_8px_40px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_60px_rgba(37,99,235,0.08)] transition-all duration-500 group ${
+              style={{ WebkitTransform: 'translateZ(0)' }}
+              className={`relative flex flex-col bg-white rounded-[2rem] p-8 lg:p-10 shadow-[0_8px_40px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_60px_rgba(37,99,235,0.08)] transition-all duration-500 group transform-gpu backface-hidden ${
                 plan.highlight 
                   ? 'ring-[1.5px] ring-blue-500/30 md:-translate-y-4 hover:-translate-y-6' 
                   : 'border border-zinc-100 hover:-translate-y-2'
@@ -113,6 +115,11 @@ export default function Pricing() {
                 <div className="text-[17px] font-bold text-zinc-900 tracking-tight transition-colors duration-300 group-hover:text-blue-600">
                   {plan.price}
                 </div>
+                {plan.name === "Vexx. Essential Care" && (
+                  <Link href="/pece" className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors mt-4 text-center block font-medium group/link">
+                    Co přesně správa obsahuje? <span className="inline-block transition-transform duration-300 group-hover/link:translate-x-1">&rarr;</span>
+                  </Link>
+                )}
               </div>
               
               {/* Subtle edge glare effect */}

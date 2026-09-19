@@ -83,7 +83,8 @@ export default function ImpactBento() {
           {/* Card 1: Hero Metric (2x2) */}
           <m.div
             variants={item}
-            className="md:col-span-2 md:row-span-2 bg-white rounded-[2rem] p-8 md:p-12 border border-black/5 shadow-[0_20px_40px_rgba(0,0,0,0.02)] relative overflow-hidden flex flex-col justify-between group"
+            style={{ WebkitTransform: 'translateZ(0)' }}
+            className="md:col-span-2 md:row-span-2 bg-white rounded-[2rem] p-8 md:p-12 border border-black/5 shadow-[0_20px_40px_rgba(0,0,0,0.02)] relative overflow-hidden flex flex-col justify-between group transform-gpu backface-hidden"
           >
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/40 via-transparent to-transparent opacity-50 pointer-events-none" />
 
@@ -117,7 +118,8 @@ export default function ImpactBento() {
           {/* Card 2: Social Proof Review */}
           <m.div
             variants={item}
-            className="md:col-span-1 md:row-span-1 bg-[#111] text-white rounded-[2rem] p-8 relative overflow-hidden flex flex-col justify-between"
+            style={{ WebkitTransform: 'translateZ(0)' }}
+            className="md:col-span-1 md:row-span-1 bg-[#111] text-white rounded-[2rem] p-8 relative overflow-hidden flex flex-col justify-between transform-gpu backface-hidden"
           >
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
 
@@ -145,7 +147,8 @@ export default function ImpactBento() {
           {/* Card 3: Rule / Custom Code */}
           <m.div
             variants={item}
-            className="md:col-span-1 md:row-span-1 bg-white rounded-[2rem] p-8 border border-black/5 shadow-[0_10px_30px_rgba(0,0,0,0.02)] flex flex-col justify-between group overflow-hidden relative"
+            style={{ WebkitTransform: 'translateZ(0)' }}
+            className="md:col-span-1 md:row-span-1 bg-white rounded-[2rem] p-8 border border-black/5 shadow-[0_10px_30px_rgba(0,0,0,0.02)] flex flex-col justify-between group overflow-hidden relative transform-gpu backface-hidden"
           >
             <div ref={codeIconRef} className="w-12 h-12 rounded-2xl bg-zinc-50 text-zinc-900 flex items-center justify-center mb-4 border border-zinc-100 group-hover:scale-110 group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100 transition-all duration-500">
               <Code2 className="w-6 h-6" />
@@ -161,7 +164,8 @@ export default function ImpactBento() {
           {/* Card 4: Guarantee (Full width bottom on mobile, spans 3 cols) */}
           <m.div
             variants={item}
-            className="md:col-span-3 md:row-span-1 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[2rem] p-8 md:p-10 text-white relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-8"
+            style={{ WebkitTransform: 'translateZ(0)' }}
+            className="md:col-span-3 md:row-span-1 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[2rem] p-8 md:p-10 text-white relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-8 transform-gpu backface-hidden"
           >
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
             <div className="absolute right-0 top-0 w-1/2 h-full bg-white/5 blur-3xl rounded-full transform translate-x-1/4 -translate-y-1/4" />

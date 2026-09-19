@@ -194,7 +194,7 @@ export default function Contact() {
                   className={inputClass}
                 />
                 <input
-                  type="url"
+                  type="text"
                   placeholder="Váš současný web"
                   value={formData.website}
                   onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
@@ -235,7 +235,7 @@ export default function Contact() {
                             <SelectPrimitive.ItemText>Redesign stávajícího webu</SelectPrimitive.ItemText>
                           </SelectPrimitive.Item>
                           <SelectPrimitive.Item value="sprava" className="cursor-pointer select-none rounded-lg px-3 py-2 text-sm text-[#52525b] data-[highlighted]:bg-[#f4f4f5] data-[highlighted]:text-[#171717] data-[highlighted]:outline-none transition-colors duration-150">
-                            <SelectPrimitive.ItemText>Jen správa nebo úpravy</SelectPrimitive.ItemText>
+                            <SelectPrimitive.ItemText>Měsíční péče (Správa webu)</SelectPrimitive.ItemText>
                           </SelectPrimitive.Item>
                         </SelectPrimitive.Viewport>
                       </SelectPrimitive.Content>
