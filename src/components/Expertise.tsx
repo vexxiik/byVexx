@@ -48,29 +48,28 @@ export default function Expertise() {
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   useGSAP(() => {
-    const el = containerRef.current;
-    if (!el) return;
+    let mm = gsap.matchMedia();
+    mm.add("(min-width: 768px)", () => {
+      const el = containerRef.current;
+      if (!el) return;
 
-    cardsRef.current.forEach((card, i) => {
-      if (!card) return;
-      gsap.fromTo(
-        card,
-        { opacity: 0, x: i % 2 === 0 ? -150 : 150, y: 50 },
-        {
-          opacity: 1,
-          x: 0,
-          y: 0,
+      cardsRef.current.forEach((card, i) => {
+        if (!card) return;
+        gsap.from(card, {
+          opacity: 0,
+          x: i % 2 === 0 ? -150 : 150,
+          y: 50,
           duration: 1,
           ease: 'back.out(1.2)',
           scrollTrigger: {
             trigger: card,
             start: 'top 85%',
           },
-        }
-      );
-    });
+        });
+      });
 
-    ScrollTrigger.refresh();
+      ScrollTrigger.refresh();
+    });
   }, { scope: containerRef });
 
   return (

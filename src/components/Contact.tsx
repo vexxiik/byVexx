@@ -26,58 +26,49 @@ export default function Contact() {
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   useGSAP(() => {
-    const el = containerRef.current;
-    if (!el) return;
+    let mm = gsap.matchMedia();
+    mm.add("(min-width: 768px)", () => {
+      const el = containerRef.current;
+      if (!el) return;
 
-    const leftPart = el.querySelector('.contact-left');
-    const rightPart = el.querySelector('.contact-right');
-    const darkCard = el.querySelector('.contact-card-dark');
+      const leftPart = el.querySelector('.contact-left');
+      const rightPart = el.querySelector('.contact-right');
+      const darkCard = el.querySelector('.contact-card-dark');
 
-    if (leftPart) {
-      gsap.fromTo(
-        leftPart,
-        { opacity: 0, x: -80 },
-        {
-          opacity: 1,
-          x: 0,
+      if (leftPart) {
+        gsap.from(leftPart, {
+          opacity: 0,
+          x: -80,
           duration: 0.9,
           ease: 'power3.out',
           scrollTrigger: { trigger: el, start: 'top 80%' },
-        }
-      );
-    }
+        });
+      }
 
-    if (rightPart) {
-      gsap.fromTo(
-        rightPart,
-        { opacity: 0, x: 80 },
-        {
-          opacity: 1,
-          x: 0,
+      if (rightPart) {
+        gsap.from(rightPart, {
+          opacity: 0,
+          x: 80,
           duration: 0.9,
           ease: 'power3.out',
           scrollTrigger: { trigger: el, start: 'top 80%' },
-        }
-      );
-    }
+        });
+      }
 
-    // Stagger cards with 60ms offset
-    if (darkCard) {
-      gsap.fromTo(
-        darkCard,
-        { opacity: 0, y: 24 },
-        {
-          opacity: 1,
-          y: 0,
+      // Stagger cards with 60ms offset
+      if (darkCard) {
+        gsap.from(darkCard, {
+          opacity: 0,
+          y: 24,
           duration: 0.7,
           ease: 'power3.out',
           delay: 0.15,
           scrollTrigger: { trigger: el, start: 'top 75%' },
-        }
-      );
-    }
+        });
+      }
 
-    ScrollTrigger.refresh();
+      ScrollTrigger.refresh();
+    });
   }, { scope: containerRef });
 
   const handleSubmit = async (e: React.FormEvent) => {

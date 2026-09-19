@@ -291,34 +291,37 @@ export default function Testimonials() {
   const activeProject = projects.find(p => p.id === activeId) || projects[0];
 
   useGSAP(() => {
-    const el = containerRef.current;
-    if (el) {
-      gsap.fromTo(
-        el,
-        { opacity: 0, y: 50 },
-        {
-          opacity: 1,
-          y: 0,
+    let mm = gsap.matchMedia();
+    mm.add("(min-width: 768px)", () => {
+      const el = containerRef.current;
+      if (el) {
+        gsap.from(el, {
+          opacity: 0,
+          y: 50,
           duration: 1,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: el,
             start: 'top 80%',
           }
-        }
-      );
-      ScrollTrigger.refresh();
-    }
+        });
+        ScrollTrigger.refresh();
+      }
+    });
   }, { scope: containerRef });
 
   useGSAP(() => {
-    if (leftColRef.current) {
-      gsap.fromTo(
-        leftColRef.current,
-        { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
-      );
-    }
+    let mm = gsap.matchMedia();
+    mm.add("(min-width: 768px)", () => {
+      if (leftColRef.current) {
+        gsap.from(leftColRef.current, { 
+          opacity: 0, 
+          y: 10, 
+          duration: 0.5, 
+          ease: 'power2.out' 
+        });
+      }
+    });
   }, { dependencies: [activeId], scope: containerRef });
 
   return (

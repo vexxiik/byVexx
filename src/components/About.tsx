@@ -11,29 +11,28 @@ export default function About() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    const el = containerRef.current;
-    if (!el) return;
+    let mm = gsap.matchMedia();
+    mm.add("(min-width: 768px)", () => {
+      const el = containerRef.current;
+      if (!el) return;
 
-    const items = el.querySelectorAll('.animate-item');
-    items.forEach((item, i) => {
-      gsap.fromTo(
-        item,
-        { opacity: 0, x: i % 2 === 0 ? -100 : 100, y: 30 },
-        {
-          opacity: 1,
-          x: 0,
-          y: 0,
+      const items = el.querySelectorAll('.animate-item');
+      items.forEach((item, i) => {
+        gsap.from(item, {
+          opacity: 0,
+          x: i % 2 === 0 ? -100 : 100,
+          y: 30,
           duration: 1,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: item,
             start: 'top 85%',
           },
-        }
-      );
-    });
+        });
+      });
 
-    ScrollTrigger.refresh();
+      ScrollTrigger.refresh();
+    });
   }, { scope: containerRef });
 
   return (

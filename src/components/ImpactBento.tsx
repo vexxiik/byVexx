@@ -18,12 +18,12 @@ export default function ImpactBento() {
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger);
 
-    if (codeIconRef.current) {
-      gsap.fromTo(codeIconRef.current,
-        { rotate: -20, scale: 0.8 },
-        {
-          rotate: 0,
-          scale: 1,
+    let mm = gsap.matchMedia();
+    mm.add("(min-width: 768px)", () => {
+      if (codeIconRef.current) {
+        gsap.from(codeIconRef.current, {
+          rotate: -20,
+          scale: 0.8,
           duration: 1,
           ease: "elastic.out(1, 0.3)",
           scrollTrigger: {
@@ -31,10 +31,10 @@ export default function ImpactBento() {
             start: "top 85%",
             once: true
           }
-        }
-      );
-    }
-    ScrollTrigger.refresh();
+        });
+      }
+      ScrollTrigger.refresh();
+    });
   }, []);
 
   // Animation is now triggered by onViewportEnter on the m.div
