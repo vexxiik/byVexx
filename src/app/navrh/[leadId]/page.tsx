@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import Footer from "@/components/Footer";
 import ProposalTracker from "./ProposalTracker";
 import ReferralButton from "./ReferralButton";
 import {
@@ -81,12 +82,9 @@ export default async function PitchPage({ params }: { params: Promise<{ leadId: 
       </div>
 
       {/* 7. Footer */}
-      <footer className="pb-12 pt-8 text-center">
-        <p className="text-sm text-zinc-300 font-medium">
-          Navrženo s &hearts; agenturou Vexx
-          <span className="text-blue-500">.</span>
-        </p>
-      </footer>
+      <div className="max-w-7xl mx-auto w-full pt-8 pb-8 border-t border-black/5 mt-12 px-6 relative z-10">
+        <Footer />
+      </div>
     </div>
   );
 }
