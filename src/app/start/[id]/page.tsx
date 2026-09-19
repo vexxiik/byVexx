@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { FileDropzone } from '@/components/ui/file-dropzone';
 import { toast } from 'sonner';
+import Footer from '@/components/Footer';
 
 export default function StartPage() {
   const domId = useId();
@@ -72,21 +73,25 @@ export default function StartPage() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-[100dvh] flex items-center justify-center px-6 bg-[#fafafa]">
-        <div className="max-w-md text-center">
-          <div className="mb-6 mx-auto w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center">
-            <svg className="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
+      <div className="min-h-[100dvh] flex flex-col px-6 bg-[#fafafa]">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="max-w-md text-center">
+            <div className="mb-6 mx-auto w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center">
+              <svg className="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h1 className="text-3xl font-bold tracking-tight text-[#171717] mb-3">
+              Podklady odeslány.
+            </h1>
+            <p className="text-[#52525b] text-lg leading-relaxed">
+              Děkuji za vyplnění. Nyní se pustím do práce na vašem webu.
+              Pokud budu potřebovat cokoliv upřesnit, ozvu se.
+            </p>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#171717] mb-3">
-            Podklady odeslány.
-          </h1>
-          <p className="text-[#52525b] text-lg leading-relaxed">
-            Děkuji za vyplnění. Nyní se pustím do práce na vašem webu.
-            Pokud budu potřebovat cokoliv upřesnit, ozvu se.
-          </p>
-          <p className="text-[#a1a1aa] text-sm mt-6">Vytvořeno agenturou Vexx.</p>
+        </div>
+        <div className="max-w-7xl mx-auto w-full pb-8">
+          <Footer />
         </div>
       </div>
     );
@@ -475,11 +480,12 @@ export default function StartPage() {
                 </svg>
               )}
             </button>
-            <p className="text-[#a1a1aa] text-xs mt-5">
-              Vytvořeno agenturou Vexx.
-            </p>
           </div>
         </form>
+      </div>
+      
+      <div className="max-w-7xl mx-auto w-full pt-8 pb-8 mt-12 relative z-10">
+        <Footer />
       </div>
     </div>
   );
