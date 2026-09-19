@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Link from 'next/link';
+import Footer from './Footer';
 import * as SelectPrimitive from '@radix-ui/react-select';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -344,16 +345,7 @@ export default function Contact() {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center justify-between text-sm text-[#a1a1aa] px-4">
-        <div>Vexx. Web Development</div>
-        <div className="flex gap-6 my-4 md:my-0">
-          <Link href="/#work" className="hover:text-[#171717] transition-colors">Práce</Link>
-          <Link href="/#expertise" className="hover:text-[#171717] transition-colors">Expertíza</Link>
-          <Link href="/#about" className="hover:text-[#171717] transition-colors">O mně</Link>
-          <Link href="/#contact" className="hover:text-[#171717] transition-colors">Kontakt</Link>
-        </div>
-        <div>© 2026</div>
-      </div>
+      <Footer />
     </footer>
   );
 }
