@@ -10,7 +10,10 @@ import { deleteLeadsAction, bulkUpdateStatusAction, updateLeadStatusAction, upda
 import { generateAndSendEmail } from "@/app/actions/campaigns";
 import KanbanBoard from "./KanbanBoard";
 import ScraperTerminal from "./ScraperTerminal";
-import { LayoutGrid, List, Plus, Settings, Phone as PhoneIcon, MessageCircle, Link2, Eye, ExternalLink, Zap, Mail, Save } from "lucide-react";
+import { LayoutGrid, List, Plus, Settings, Phone as PhoneIcon, MessageCircle, Link2, Eye, ExternalLink, Zap, Mail, Save, Folder } from "lucide-react";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
@@ -43,7 +46,7 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
   const [drawerCeo, setDrawerCeo] = useState("");
   const [drawerEmail, setDrawerEmail] = useState("");
 
-  const [view, setView] = useState<"table" | "kanban">("table");
+  const [view, setView] = useState<"table" | "kanban" | "projects">("table");
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [addForm, setAddForm] = useState({ companyName: "", phone: "", city: "" });
@@ -413,11 +416,92 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
             <LayoutGrid className="size-4" />
             Kanban
           </button>
+          <button
+            onClick={() => setView("projects")}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-all",
+              view === "projects" ? "bg-gray-100 text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+            )}
+          >
+            <Folder className="size-4" />
+            Projekty
+          </button>
         </div>
       </div>
 
       {/* Zobrazení */}
-      {view === "kanban" ? (
+      {view === "projects" ? (
+        <div className="max-w-5xl mx-auto mt-4 pb-20">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Aktivní projekty</h2>
+            <p className="text-gray-500 text-sm">Klienti, kteří dokončili onboarding a čekají na realizaci.</p>
+          </div>
+          <Accordion type="single" collapsible className="w-full bg-white rounded-2xl border border-zinc-100 shadow-[0_4px_24px_rgba(0,0,0,0.02)] p-2">
+            {leads.filter(l => l.onboardingCompleted).length === 0 ? (
+               <div className="p-8 text-center text-zinc-500 text-sm">Zatím žádné vyplněné onboardingy.</div>
+            ) : leads.filter(l => l.onboardingCompleted).map(lead => (
+              <AccordionItem key={lead.id} value={lead.id} className="px-4 border-zinc-100">
+                <AccordionTrigger className="hover:no-underline py-5">
+                  <div className="flex items-center gap-4 text-left">
+                    <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg shrink-0">
+                      {lead.companyName.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-zinc-900">{lead.companyName}</div>
+                      <div className="text-xs text-zinc-500 font-normal mt-0.5">IČO: {lead.ico || "-"} | Status: {lead.status}</div>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pt-2 pb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10 text-sm text-zinc-700 bg-zinc-50/50 p-6 rounded-xl border border-zinc-100">
+                    <div className="space-y-6">
+                      <div>
+                        <h4 className="font-semibold text-zinc-900 mb-2 flex items-center gap-2">
+                          <Folder className="size-4 text-blue-500" />
+                          Fakturační údaje
+                        </h4>
+                        <div className="space-y-1 text-zinc-600">
+                          <p><span className="font-medium text-zinc-900">Jméno:</span> {lead.billingName || "-"}</p>
+                          <p><span className="font-medium text-zinc-900">Adresa:</span> {lead.billingAddress || "-"}</p>
+                          <p><span className="font-medium text-zinc-900">IČO:</span> {lead.ico || "-"}</p>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-zinc-900 mb-2 flex items-center gap-2">
+                          <Link2 className="size-4 text-blue-500" />
+                          Doména
+                        </h4>
+                        <div className="space-y-1 text-zinc-600">
+                          <p><span className="font-medium text-zinc-900">Status:</span> {lead.domainStatus === "yes" ? "Má doménu" : "Potřebuje zařídit"}</p>
+                          <p><span className="font-medium text-zinc-900">Hodnota:</span> {lead.domainNameOrIdea || "-"}</p>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-zinc-900 mb-2">Cenová strategie</h4>
+                        <p className="text-zinc-600 bg-white p-3 rounded-md border border-zinc-200">{lead.pricingStrategy || "-"}</p>
+                      </div>
+                    </div>
+                    <div className="space-y-6">
+                      <div>
+                        <h4 className="font-semibold text-zinc-900 mb-2">Služby</h4>
+                        <p className="whitespace-pre-wrap text-zinc-600 bg-white p-3 rounded-md border border-zinc-200">{lead.servicesDescription || "-"}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-zinc-900 mb-2">Proč my (Výhody)</h4>
+                        <p className="whitespace-pre-wrap text-zinc-600 bg-white p-3 rounded-md border border-zinc-200">{lead.whyUsDescription || "-"}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-zinc-900 mb-2">Reference</h4>
+                        <p className="whitespace-pre-wrap text-zinc-600 bg-white p-3 rounded-md border border-zinc-200">{lead.references || "-"}</p>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      ) : view === "kanban" ? (
         <KanbanBoard 
           leads={leads} 
           updateStatus={updateStatus} 
@@ -510,26 +594,61 @@ export default function LeadTable({ initialLeads, initialSmsTemplate = "" }: { i
                     </td>
                     <td className="px-6 py-4 text-right space-x-1">
                       <button 
-                        onClick={() => copyToClipboard(lead.phone, "Telefon")}
-                        className="p-2 text-gray-400 hover:text-[#3b82f6] hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Kopírovat telefon"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`https://vexx.cz/start/${lead.id}`);
+                          toast.success("Odkaz na formulář zkopírován");
+                        }}
+                        className="p-2 text-zinc-400 hover:text-zinc-900 transition-colors inline-flex"
+                        title="Kopírovat Onboarding odkaz"
                       >
-                        <Copy className="size-4" />
+                        <Link2 className="size-4" />
                       </button>
-                      <button 
-                        onClick={() => openDrawer(lead)}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Upravit / Detail"
+                      
+                      <Link 
+                        href={`/navrh/${lead.id}`} 
+                        target="_blank"
+                        className="p-2 text-zinc-400 hover:text-zinc-900 transition-colors inline-flex"
+                        title="Otevřít Pitch Page"
                       >
-                        <MoreHorizontal className="size-4" />
-                      </button>
-                      <button 
-                        onClick={() => copyToClipboard(smsTemplate, "SMS šablona")}
-                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        title="Zkopírovat SMS text"
-                      >
-                        <MessageSquare className="size-4" />
-                      </button>
+                        <Eye className="size-4" />
+                      </Link>
+
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button 
+                            className="p-2 text-zinc-400 hover:text-zinc-900 transition-colors inline-flex"
+                            title="Administrativa"
+                          >
+                            <MoreHorizontal className="size-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48 shadow-[0_10px_40px_rgba(0,0,0,0.08)] border-zinc-100">
+                          <DropdownMenuItem 
+                            onClick={() => openDrawer(lead)}
+                          >
+                            <Settings className="mr-2 size-4 text-zinc-400" />
+                            <span>Upravit lead</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => {
+                              setLeads(prev => prev.filter(l => l.id !== lead.id));
+                              startTransition(async () => {
+                                const res = await deleteLeadsAction({ ids: [lead.id] });
+                                if (res.error) {
+                                  toast.error(res.error);
+                                  setLeads(initialLeads);
+                                } else {
+                                  toast.success("Lead smazán");
+                                }
+                              });
+                            }}
+                            className="text-red-600 focus:text-red-700 focus:bg-red-50"
+                          >
+                            <Trash2 className="mr-2 size-4 text-red-500" />
+                            <span>Smazat lead</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </m.tr>
                 ))}

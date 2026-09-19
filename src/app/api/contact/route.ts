@@ -8,7 +8,7 @@ const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_key');
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, message, isUrgent } = body;
+    const { name, email, phone, website, projectType, budget, message, isUrgent } = body;
 
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       to: email,
       bcc: 'jakub.sokol2007@gmail.com', // Skrytá kopie pro majitele webu
       subject: 'Vaše poptávka dorazila v pořádku.',
-      react: WelcomeEmail({ name, message, isUrgent }),
+      react: WelcomeEmail({ name, phone, website, projectType, budget, message, isUrgent }),
     });
 
     if (welcomeData.error) {

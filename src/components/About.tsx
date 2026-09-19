@@ -52,6 +52,15 @@ export default function About() {
         <p className="animate-item font-medium text-[#171717]">
           Nestavím weby, které jen hezky vypadají. Stavím řešení, která vašemu byznysu reálně pomáhají růst.
         </p>
+        <div className="animate-item pt-4">
+          <h3 className="text-sm font-semibold tracking-wide uppercase text-[#a1a1aa] mb-2">
+            Kde působím?
+          </h3>
+          <p>
+            Jsem ze Starého Hradiště. Pro klienty z Pardubic a&nbsp;okolí se velmi rád potkám osobně.
+            Se&nbsp;zbytkem republiky funguji naprosto bez&nbsp;problémů online.
+          </p>
+        </div>
       </div>
     </section>
   );

@@ -13,11 +13,27 @@ import * as React from "react";
 
 interface WelcomeEmailProps {
   name?: string;
+  phone?: string;
+  website?: string;
+  projectType?: string;
+  budget?: string;
   message?: string;
   isUrgent?: boolean;
 }
 
-export default function WelcomeEmail({ name, message, isUrgent }: WelcomeEmailProps = {}) {
+const PROJECT_TYPE_LABELS: Record<string, string> = {
+  'novy-web': 'Zbrusu nový web',
+  'redesign': 'Redesign stávajícího webu',
+  'sprava': 'Jen správa nebo úpravy',
+};
+
+const BUDGET_LABELS: Record<string, string> = {
+  'do-15000': 'do 15 000 Kč',
+  '15000-25000': '15 000 – 25 000 Kč',
+  'nad-25000': 'nad 25 000 Kč',
+};
+
+export default function WelcomeEmail({ name, phone, website, projectType, budget, message, isUrgent }: WelcomeEmailProps = {}) {
   return (
     <Html>
       <Head />
@@ -51,7 +67,11 @@ export default function WelcomeEmail({ name, message, isUrgent }: WelcomeEmailPr
             <Section style={summarySection}>
               <Text style={summaryTitle}>Shrnutí vaší poptávky:</Text>
               {name && <Text style={summaryText}><strong>Jméno:</strong> {name}</Text>}
-              {message && <Text style={summaryText}><strong>Zpráva:</strong> {message}</Text>}
+              {phone && <Text style={summaryText}><strong>Telefon:</strong> {phone}</Text>}
+              {website && <Text style={summaryText}><strong>Současný web:</strong> {website}</Text>}
+              {projectType && <Text style={summaryText}><strong>Typ projektu:</strong> {PROJECT_TYPE_LABELS[projectType] || projectType}</Text>}
+              {budget && <Text style={summaryText}><strong>Rozpočet:</strong> {BUDGET_LABELS[budget] || budget}</Text>}
+              {message && <Text style={summaryText}><strong>Představa:</strong> {message}</Text>}
               <Text style={summaryText}>
                 <strong>Projekt spěchá:</strong> {isUrgent ? 'Ano' : 'Ne'}
               </Text>

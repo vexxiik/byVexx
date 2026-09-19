@@ -75,6 +75,18 @@ model Lead {
   lastEmailedAt   DateTime?
   lastEmailBody   String?  @db.Text
   email           String?
+  
+  // Onboarding fields
+  billingName         String?
+  billingAddress      String?
+  domainStatus        String?
+  domainNameOrIdea    String?
+  servicesDescription String?
+  whyUsDescription    String?
+  pricingStrategy     String?
+  references          String?
+  onboardingCompleted Boolean  @default(false)
+
   createdAt       DateTime @default(now())
 
   userId          String?

@@ -23,8 +23,16 @@ export default function StickyCTA() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Hide on admin pages
-  if (pathname?.startsWith('/admin')) return null;
+  // Hide on admin and funnel pages
+  if (
+    pathname?.startsWith('/admin') ||
+    pathname?.startsWith('/navrh') ||
+    pathname?.startsWith('/pitch') ||
+    pathname?.startsWith('/start') ||
+    pathname?.startsWith('/onboarding')
+  ) {
+    return null;
+  }
 
   return (
     <div
